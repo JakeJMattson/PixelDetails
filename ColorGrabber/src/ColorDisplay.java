@@ -11,9 +11,10 @@ public class ColorDisplay extends JFrame
 	private JLabel lblHex;
 	private JPanel colorPanel;
 	private boolean openStatus = true;
+	private boolean dynamic;
 
-	public ColorDisplay()
-	{
+	public ColorDisplay(boolean dynamic)
+	{	
 		//Create frame
 		super();
 		setPreferences();
@@ -23,7 +24,19 @@ public class ColorDisplay extends JFrame
 
 		//Add panels to frame
 		this.add(displayPanel);
-
+		
+		//Set class variables
+		this.dynamic = dynamic;
+		
+		//Set static size
+		if (!dynamic)
+		{
+			this.pack();
+			Dimension dim = this.getSize();
+			dim.width *= 1.25;
+			this.setSize(dim);
+		}
+		
 		//Show frame
 		this.setVisible(true);
 	}
@@ -110,7 +123,8 @@ public class ColorDisplay extends JFrame
 		lblHex.repaint();
 
 		//Resize frame
-		this.pack();
+		if (dynamic)
+			this.pack();
 	}
 
 	public void setColor(Color color)
@@ -136,7 +150,7 @@ public class ColorDisplay extends JFrame
 		int lowerBound = (int) (framePosition.getY() + frameHeight);
 
 		//Distance between display and mouse
-		int buffer = 1;
+		int buffer = 10;
 
 		//Determine direction
 		if (rightBound >= screenWidth)

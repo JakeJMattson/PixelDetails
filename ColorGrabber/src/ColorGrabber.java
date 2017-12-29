@@ -5,26 +5,34 @@ public class ColorGrabber
 {
 	public static void main(String[] args)
 	{
-		ColorGrabber driver = new ColorGrabber();
-
 		try
 		{
-			driver.start();
+			//Allow user to choose placement options
+			int choice = JOptionPane.showConfirmDialog(null, "Would you like the display to be dynamically placed near the mouse pointer?",
+														"Display options", JOptionPane.YES_NO_OPTION);
+			
+			boolean dynamic = (choice == JOptionPane.YES_OPTION);
+			
+			//Begin program
+			ColorGrabber driver = new ColorGrabber();
+			driver.start(dynamic);
 		}
 		catch (Exception e)
 		{
+			//Report fatal errors to user
 			JOptionPane.showMessageDialog(null, e.toString(), "Something went wrong!", JOptionPane.ERROR_MESSAGE);
 		}
 		finally
 		{
+			//Terminate program
 			System.exit(0);
 		}
 	}
 
-	public void start()
+	public void start(boolean dynamic)
 	{
 		//Local variables
-		ColorDisplay display = new ColorDisplay();
+		ColorDisplay display = new ColorDisplay(dynamic);
 		Robot robot = createRobot();
 
 		//While frame is open
@@ -44,7 +52,9 @@ public class ColorGrabber
 			//Set display
 			display.setText(coordinates, rgb, hsv, hex);
 			display.setColor(currentColor);
-			display.setPosition(mousePosition);
+			
+			if (dynamic)
+				display.setPosition(mousePosition);
 		}
 	}
 
