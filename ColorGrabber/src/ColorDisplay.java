@@ -5,22 +5,28 @@ import javax.swing.*;
 @SuppressWarnings("serial")
 public class ColorDisplay extends JFrame
 {
+	//Externally set components
 	private JLabel lblCoordinates;
 	private JLabel lblRGB;
 	private JLabel lblHSV;
 	private JLabel lblHex;
 	private JPanel colorPanel;
+	
+	//Frame preferences
 	private boolean openStatus = true;
 	private boolean dynamic;
 
-	public ColorDisplay(boolean dynamic)
+	public ColorDisplay(boolean[] displayOptions, boolean dynamic)
 	{	
 		//Create frame
 		super();
 		setPreferences();
 
+		//Determine total number of visible panels
+		int numOfPanelsVisible = sumVisibility(displayOptions);
+		
 		//Create panels
-		JPanel displayPanel = createDisplayPanel();
+		JPanel displayPanel = createDisplayPanel(displayOptions, numOfPanelsVisible);
 
 		//Add panels to frame
 		this.add(displayPanel);
@@ -41,6 +47,19 @@ public class ColorDisplay extends JFrame
 		this.setVisible(true);
 	}
 
+	private int sumVisibility(boolean[] panelVisibilities)
+	{
+		//Local variables
+		int total = 0;
+		
+		//Sum visibilities from array
+		for (int i = 0; i < panelVisibilities.length; i++)
+			if (panelVisibilities[i])
+				total++;
+		
+		return total;
+	}
+
 	private void setPreferences()
 	{
 		//Set frame preferences
@@ -57,11 +76,11 @@ public class ColorDisplay extends JFrame
 		});
 	}
 	
-	private JPanel createDisplayPanel()
+	private JPanel createDisplayPanel(boolean[] displayOptions, int numVisible)
 	{
 		//Create panels
 		JPanel displayPanel = new JPanel();
-		GridLayout layout = new GridLayout(5, 1);
+		GridLayout layout = new GridLayout(numVisible, 1);
 		displayPanel.setLayout(layout);
 		JPanel[] panels = new JPanel[4];
 		colorPanel = new JPanel();
@@ -83,10 +102,11 @@ public class ColorDisplay extends JFrame
 		lblHex = new JLabel("hex");
 
 		//Change labels to fixed-width font
-		lblDisplayCoord.setFont(new Font("Monospaced", Font.BOLD, 12));
-		lblDisplayRGB.setFont(new Font("Monospaced", Font.BOLD, 12));
-		lblDisplayHSV.setFont(new Font("Monospaced", Font.BOLD, 12));
-		lblDisplayHex.setFont(new Font("Monospaced", Font.BOLD, 12));
+		Font monospaced = new Font("Monospaced", Font.BOLD, 12);
+		lblDisplayCoord.setFont(monospaced);
+		lblDisplayRGB.setFont(monospaced);
+		lblDisplayHSV.setFont(monospaced);
+		lblDisplayHex.setFont(monospaced);
 
 		//Add labels to panels
 		panels[0].add(lblDisplayCoord);
@@ -100,9 +120,11 @@ public class ColorDisplay extends JFrame
 
 		//Add smaller panels to display panel
 		for (int i = 0; i < panels.length; i++)
-			displayPanel.add(panels[i]);
+			if (displayOptions[i])
+				displayPanel.add(panels[i]);
 
-		displayPanel.add(colorPanel);
+		if (displayOptions[4])
+			displayPanel.add(colorPanel);
 
 		return displayPanel;
 	}

@@ -1,21 +1,15 @@
 import java.awt.*;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 public class ColorGrabber
 {
 	public static void main(String[] args)
-	{
+	{		
 		try
-		{
-			//Allow user to choose placement options
-			int choice = JOptionPane.showConfirmDialog(null, "Would you like the display to be dynamically placed near the mouse pointer?",
-														"Display options", JOptionPane.YES_NO_OPTION);
-			
-			boolean dynamic = (choice == JOptionPane.YES_OPTION);
-			
+		{			
 			//Begin program
 			ColorGrabber driver = new ColorGrabber();
-			driver.start(dynamic);
+			driver.start();
 		}
 		catch (Exception e)
 		{
@@ -29,11 +23,28 @@ public class ColorGrabber
 		}
 	}
 
-	public void start(boolean dynamic)
+	public void start()
 	{
-		//Local variables
-		ColorDisplay display = new ColorDisplay(dynamic);
+		//Allow user to choose display options
+		String title = "Select desired info to display";
+		String[] options = {"Coordinates", "RGB", "HSV", "Hex", "Color bar"};
+		
+		//Get user choices
+		boolean[] displayChoices = displayOptions(title, options);
+		
+		//If submit button not clicked, exit program
+		if (displayChoices == null)
+			System.exit(0);
+		
+		//Allow user to choose placement options
+		boolean dynamic = JOptionPane.showConfirmDialog(null, "Would you like the display to be dynamically placed near the mouse pointer?",
+														"Display options", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+		
+		//Create robot to get pixel color
 		Robot robot = createRobot();
+		
+		//Create display
+		ColorDisplay display = new ColorDisplay(displayChoices, dynamic);	
 
 		//While frame is open
 		while (display.getStatus())
@@ -58,6 +69,30 @@ public class ColorGrabber
 		}
 	}
 
+	private static boolean[] displayOptions(String title, String[] options)
+	{
+		//Local variables
+		boolean[] results = new boolean[options.length];
+		JCheckBox[] boxes = new JCheckBox[options.length];
+		Object[] buttonText = {"Submit"};
+		
+		//Create check boxes
+		for (int i = 0; i < options.length; i++)
+			boxes[i] = new JCheckBox(options[i]);
+		
+		//Get choices from user
+		int choice = JOptionPane.showOptionDialog(null, boxes, title, JOptionPane.PLAIN_MESSAGE, JOptionPane.PLAIN_MESSAGE, null, buttonText, buttonText[0]);
+		
+		for (int i = 0; i < results.length; i++)
+			results[i] = boxes[i].isSelected();
+		
+		//Return results based on button press
+		if (choice == JOptionPane.YES_OPTION)
+			return results;
+		else
+			return null;
+	}
+	
 	private Robot createRobot()
 	{
 		Robot robot = null;
