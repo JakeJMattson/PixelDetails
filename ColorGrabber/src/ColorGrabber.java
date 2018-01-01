@@ -28,6 +28,7 @@ public class ColorGrabber
 		//Allow user to choose display options
 		String title = "Select desired info to display";
 		String[] options = {"Coordinates", "RGB", "HSV", "Hex", "Color bar"};
+		String[] labelText = {"X,Y = ", "RGB = ", "HSV = ", "Hex = "};
 		
 		//Get user choices
 		boolean[] displayChoices = displayOptions(title, options);
@@ -44,7 +45,7 @@ public class ColorGrabber
 		Robot robot = createRobot();
 		
 		//Create display
-		ColorDisplay display = new ColorDisplay(displayChoices, dynamic);	
+		ColorDisplay display = new ColorDisplay(labelText, displayChoices, dynamic);	
 
 		//While frame is open
 		while (display.getStatus())
@@ -61,7 +62,8 @@ public class ColorGrabber
 			String hex = createHexString(rgbInfo);
 
 			//Set display
-			display.setText(coordinates, rgb, hsv, hex);
+			String[] displayText = {coordinates, rgb, hsv, hex};
+			display.setLabelText(displayText);
 			display.setColor(currentColor);
 			
 			if (dynamic)

@@ -6,17 +6,14 @@ import javax.swing.*;
 public class ColorDisplay extends JFrame
 {
 	//Externally set components
-	private JLabel lblCoordinates;
-	private JLabel lblRGB;
-	private JLabel lblHSV;
-	private JLabel lblHex;
+	private JLabel[] displayLabels;
 	private JPanel colorPanel;
 	
 	//Frame preferences
 	private boolean openStatus = true;
 	private boolean dynamic;
 
-	public ColorDisplay(boolean[] displayOptions, boolean dynamic)
+	public ColorDisplay(String[] labelText, boolean[] displayOptions, boolean dynamic)
 	{	
 		//Create frame
 		super();
@@ -26,7 +23,7 @@ public class ColorDisplay extends JFrame
 		int numOfPanelsVisible = sumVisibility(displayOptions);
 		
 		//Create panels
-		JPanel displayPanel = createDisplayPanel(displayOptions, numOfPanelsVisible);
+		JPanel displayPanel = createDisplayPanel(labelText, displayOptions, numOfPanelsVisible);
 
 		//Add panels to frame
 		this.add(displayPanel);
@@ -76,73 +73,61 @@ public class ColorDisplay extends JFrame
 		});
 	}
 	
-	private JPanel createDisplayPanel(boolean[] displayOptions, int numVisible)
+	private JPanel createDisplayPanel(String[] labelText, boolean[] displayOptions, int numVisible)
 	{
 		//Create panels
 		JPanel displayPanel = new JPanel();
 		GridLayout layout = new GridLayout(numVisible, 1);
 		displayPanel.setLayout(layout);
-		JPanel[] panels = new JPanel[4];
+		JPanel[] panels = new JPanel[labelText.length + 1];
 		colorPanel = new JPanel();
 
 		for (int i = 0; i < panels.length; i++)
 		{
 			panels[i] = new JPanel();
 			panels[i].setLayout(new FlowLayout(FlowLayout.LEFT));
-		}
-
+		}		
+		
 		//Create labels
-		JLabel lblDisplayCoord = new JLabel("X,Y = ");
-		JLabel lblDisplayRGB = new JLabel("RGB = ");
-		JLabel lblDisplayHSV = new JLabel("HSV = ");
-		JLabel lblDisplayHex = new JLabel("Hex = ");
-		lblCoordinates = new JLabel("(x, y)");
-		lblRGB = new JLabel("(r, g, b)");
-		lblHSV = new JLabel("(h, s, v)");
-		lblHex = new JLabel("hex");
-
-		//Change labels to fixed-width font
-		Font monospaced = new Font("Monospaced", Font.BOLD, 12);
-		lblDisplayCoord.setFont(monospaced);
-		lblDisplayRGB.setFont(monospaced);
-		lblDisplayHSV.setFont(monospaced);
-		lblDisplayHex.setFont(monospaced);
-
-		//Add labels to panels
-		panels[0].add(lblDisplayCoord);
-		panels[0].add(lblCoordinates);
-		panels[1].add(lblDisplayRGB);
-		panels[1].add(lblRGB);
-		panels[2].add(lblDisplayHSV);
-		panels[2].add(lblHSV);
-		panels[3].add(lblDisplayHex);
-		panels[3].add(lblHex);
-
-		//Add smaller panels to display panel
-		for (int i = 0; i < panels.length; i++)
-			if (displayOptions[i])
+		displayLabels = new JLabel[labelText.length];
+		JLabel[] labels = new JLabel[labelText.length];
+		Font labelFont = new Font("Monospaced", Font.BOLD, 12);
+		
+		for (int i = 0; i < labelText.length; i++)
+		{
+			if (displayOptions[i]) 
+			{
+				//Create labels
+				labels[i] = new JLabel(labelText[i]);
+				labels[i].setFont(labelFont);
+				displayLabels[i] = new JLabel(labelText[i]);
+				
+				//Add labels to panels
+				panels[i].add(labels[i]);
+				panels[i].add(displayLabels[i]);
+				
+				//Add smaller panels to display panel
 				displayPanel.add(panels[i]);
-
-		if (displayOptions[4])
+			}
+		}
+		
+		if (displayOptions[labelText.length])
 			displayPanel.add(colorPanel);
 
 		return displayPanel;
 	}
 
-	public void setText(String coordinates, String rgb, String hsv, String hex)
+	public void setLabelText(String[] labelText)
 	{
 		//Set label text
-		lblCoordinates.setText(coordinates);
-		lblCoordinates.repaint();
-
-		lblRGB.setText(rgb);
-		lblRGB.repaint();
-
-		lblHSV.setText(hsv);
-		lblHSV.repaint();
-
-		lblHex.setText(hex);
-		lblHex.repaint();
+		for (int i = 0; i < labelText.length; i++)
+		{
+			if (displayLabels[i] != null) 
+			{
+				displayLabels[i].setText(labelText[i]);
+				displayLabels[i].repaint();
+			}
+		}
 
 		//Resize frame
 		if (dynamic)
