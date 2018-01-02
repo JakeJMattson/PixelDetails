@@ -28,7 +28,6 @@ public class ColorGrabber
 		//Allow user to choose display options
 		String title = "Select desired info to display";
 		String[] options = {"Coordinates", "RGB", "HSV", "Hex", "Color bar"};
-		String[] labelText = {"X,Y = ", "RGB = ", "HSV = ", "Hex = "};
 		
 		//Get user choices
 		boolean[] displayChoices = displayOptions(title, options);
@@ -45,14 +44,15 @@ public class ColorGrabber
 		Robot robot = createRobot();
 		
 		//Create display
-		ColorDisplay display = new ColorDisplay(labelText, displayChoices, dynamic);	
+		String[] staticLabelText = {"X,Y = ", "RGB = ", "HSV = ", "Hex = "};
+		ColorDisplay display = new ColorDisplay(staticLabelText, displayChoices, dynamic);	
 
 		//While frame is open
 		while (display.getStatus())
 		{
 			//Get base info
-			Point mousePosition = getMousePosition();
-			Color currentColor = getCurrentColor(robot, mousePosition);
+			Point mousePosition = MouseInfo.getPointerInfo().getLocation();
+			Color currentColor = robot.getPixelColor(mousePosition.x, mousePosition.y);
 			int[] rgbInfo = getColorInfo(currentColor);
 
 			//Create strings to display
@@ -62,8 +62,8 @@ public class ColorGrabber
 			String hex = createHexString(rgbInfo);
 
 			//Set display
-			String[] displayText = {coordinates, rgb, hsv, hex};
-			display.setLabelText(displayText);
+			String[] dynamicLabelText = {coordinates, rgb, hsv, hex};
+			display.setDynamicLabelText(dynamicLabelText);
 			display.setColor(currentColor);
 			
 			if (dynamic)
@@ -89,10 +89,10 @@ public class ColorGrabber
 			results[i] = boxes[i].isSelected();
 		
 		//Return results based on button press
-		if (choice == JOptionPane.YES_OPTION)
-			return results;
-		else
-			return null;
+		if (choice != JOptionPane.YES_OPTION)
+			results = null;
+		
+		return results;
 	}
 	
 	private Robot createRobot()
@@ -108,16 +108,6 @@ public class ColorGrabber
 		}
 
 		return robot;
-	}
-
-	private Point getMousePosition()
-	{
-		return MouseInfo.getPointerInfo().getLocation();
-	}
-
-	private Color getCurrentColor(Robot robot, Point mousePosition)
-	{
-		return robot.getPixelColor(mousePosition.x, mousePosition.y);
 	}
 
 	private int[] getColorInfo(Color pixelColor)

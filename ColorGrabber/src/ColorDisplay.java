@@ -2,44 +2,33 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-@SuppressWarnings("serial")
 public class ColorDisplay extends JFrame
 {
 	//Externally set components
-	private JLabel[] displayLabels;
+	private JLabel[] dynamicLabels;
 	private JPanel colorPanel;
 	
 	//Frame preferences
 	private boolean openStatus = true;
-	private boolean dynamic;
 
 	public ColorDisplay(String[] labelText, boolean[] displayOptions, boolean dynamic)
 	{	
 		//Create frame
 		super();
-		setPreferences();
+		setPreferences(dynamic);
 
 		//Determine total number of visible panels
 		int numOfPanelsVisible = sumVisibility(displayOptions);
 		
 		//Create panels
 		JPanel displayPanel = createDisplayPanel(labelText, displayOptions, numOfPanelsVisible);
+		
+		if (dynamic)
+			displayPanel.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK));
 
 		//Add panels to frame
 		this.add(displayPanel);
-		
-		//Set class variables
-		this.dynamic = dynamic;
-		
-		//Set static size
-		if (!dynamic)
-		{
-			this.pack();
-			Dimension dim = this.getSize();
-			dim.width *= 1.25;
-			this.setSize(dim);
-		}
-		
+
 		//Show frame
 		this.setVisible(true);
 	}
@@ -57,9 +46,10 @@ public class ColorDisplay extends JFrame
 		return total;
 	}
 
-	private void setPreferences()
+	private void setPreferences(boolean dynamic)
 	{
 		//Set frame preferences
+		this.setUndecorated(dynamic);
 		this.setAlwaysOnTop(true);
 		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter()
@@ -89,8 +79,8 @@ public class ColorDisplay extends JFrame
 		}		
 		
 		//Create labels
-		displayLabels = new JLabel[labelText.length];
-		JLabel[] labels = new JLabel[labelText.length];
+		dynamicLabels = new JLabel[labelText.length];
+		JLabel[] staticLabels = new JLabel[labelText.length];
 		Font labelFont = new Font("Monospaced", Font.BOLD, 12);
 		
 		for (int i = 0; i < labelText.length; i++)
@@ -98,13 +88,13 @@ public class ColorDisplay extends JFrame
 			if (displayOptions[i]) 
 			{
 				//Create labels
-				labels[i] = new JLabel(labelText[i]);
-				labels[i].setFont(labelFont);
-				displayLabels[i] = new JLabel(labelText[i]);
+				staticLabels[i] = new JLabel(labelText[i]);
+				staticLabels[i].setFont(labelFont);
+				dynamicLabels[i] = new JLabel(labelText[i]);
 				
 				//Add labels to panels
-				panels[i].add(labels[i]);
-				panels[i].add(displayLabels[i]);
+				panels[i].add(staticLabels[i]);
+				panels[i].add(dynamicLabels[i]);
 				
 				//Add smaller panels to display panel
 				displayPanel.add(panels[i]);
@@ -117,21 +107,20 @@ public class ColorDisplay extends JFrame
 		return displayPanel;
 	}
 
-	public void setLabelText(String[] labelText)
+	public void setDynamicLabelText(String[] labelText)
 	{
 		//Set label text
 		for (int i = 0; i < labelText.length; i++)
 		{
-			if (displayLabels[i] != null) 
+			if (dynamicLabels[i] != null) 
 			{
-				displayLabels[i].setText(labelText[i]);
-				displayLabels[i].repaint();
+				dynamicLabels[i].setText(labelText[i]);
+				dynamicLabels[i].repaint();
 			}
 		}
 
 		//Resize frame
-		if (dynamic)
-			this.pack();
+		this.pack();
 	}
 
 	public void setColor(Color color)
