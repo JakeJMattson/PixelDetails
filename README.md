@@ -1,1 +1,1 @@
-# ColorGrabber
+# PixelDetails
