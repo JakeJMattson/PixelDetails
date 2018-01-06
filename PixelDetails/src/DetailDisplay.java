@@ -2,7 +2,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class ColorDisplay extends JFrame
+public class DetailDisplay extends JFrame
 {
 	//Externally set components
 	private JLabel[] dynamicLabels;
@@ -11,7 +11,7 @@ public class ColorDisplay extends JFrame
 	//Frame preferences
 	private boolean openStatus = true;
 
-	public ColorDisplay(String[] labelText, boolean[] displayOptions, boolean dynamic)
+	public DetailDisplay(String[] labelText, boolean[] displayOptions, boolean dynamic)
 	{	
 		//Create frame
 		super();

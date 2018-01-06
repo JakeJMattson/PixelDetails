@@ -1,26 +1,16 @@
 import java.awt.*;
 import javax.swing.*;
 
-public class ColorGrabber
+public class PixelReader
 {
 	public static void main(String[] args)
-	{		
-		try
-		{			
+	{				
 			//Begin program
-			ColorGrabber driver = new ColorGrabber();
+			PixelReader driver = new PixelReader();
 			driver.start();
-		}
-		catch (Exception e)
-		{
-			//Report fatal errors to user
-			JOptionPane.showMessageDialog(null, e.toString(), "Something went wrong!", JOptionPane.ERROR_MESSAGE);
-		}
-		finally
-		{
-			//Terminate program
+
+			//Terminate program after window closes
 			System.exit(0);
-		}
 	}
 
 	public void start()
@@ -37,15 +27,16 @@ public class ColorGrabber
 			System.exit(0);
 		
 		//Allow user to choose placement options
-		boolean dynamic = JOptionPane.showConfirmDialog(null, "Would you like the display to be dynamically placed near the mouse pointer?",
-														"Display options", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+		boolean dynamic = JOptionPane.showConfirmDialog(null, 
+				"Would you like the display to be dynamically placed near the mouse pointer?",
+				"Display options", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
 		
 		//Create robot to get pixel color
 		Robot robot = createRobot();
 		
 		//Create display
 		String[] staticLabelText = {"X,Y = ", "RGB = ", "HSV = ", "Hex = "};
-		ColorDisplay display = new ColorDisplay(staticLabelText, displayChoices, dynamic);	
+		DetailDisplay display = new DetailDisplay(staticLabelText, displayChoices, dynamic);	
 
 		//While frame is open
 		while (display.getStatus())
@@ -112,13 +103,8 @@ public class ColorGrabber
 
 	private int[] getColorInfo(Color pixelColor)
 	{
-		//Get rgb values from color
-		int red = pixelColor.getRed();
-		int green = pixelColor.getGreen();
-		int blue = pixelColor.getBlue();
-
 		//Create array of rgb values
-		int[] rgb = {red, green, blue};
+		int[] rgb = {pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue()};
 
 		return rgb;
 	}
