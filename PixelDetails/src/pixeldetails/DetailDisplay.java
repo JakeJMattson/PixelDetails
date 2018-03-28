@@ -1,28 +1,33 @@
+package pixeldetails;
+
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 
+@SuppressWarnings("serial")
 public class DetailDisplay extends JFrame
 {
 	//Externally set components
 	private JLabel[] dynamicLabels;
 	private JPanel colorPanel;
-	
+
 	//Frame preferences
 	private boolean openStatus = true;
 
 	public DetailDisplay(String[] labelText, boolean[] displayOptions, boolean dynamic)
-	{	
+	{
 		//Create frame
 		super();
 		setPreferences(dynamic);
+		init(labelText.length);
 
 		//Determine total number of visible panels
 		int numOfPanelsVisible = sumVisibility(displayOptions);
-		
+
 		//Create panels
 		JPanel displayPanel = createDisplayPanel(labelText, displayOptions, numOfPanelsVisible);
-		
+
 		if (dynamic)
 			displayPanel.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK));
 
@@ -30,77 +35,71 @@ public class DetailDisplay extends JFrame
 		this.add(displayPanel);
 
 		//Show frame
-		this.setVisible(true);
+		setVisible(true);
+	}
+
+	private void init(int numOfLabels)
+	{
+		dynamicLabels = new JLabel[numOfLabels];
+
+		for (int i = 0; i < dynamicLabels.length; i++)
+			dynamicLabels[i] = new JLabel();
+
+		colorPanel = new JPanel();
 	}
 
 	private int sumVisibility(boolean[] panelVisibilities)
 	{
 		//Local variables
 		int total = 0;
-		
+
 		//Sum visibilities from array
-		for (int i = 0; i < panelVisibilities.length; i++)
-			if (panelVisibilities[i])
-				total++;
-		
+		for (boolean visible : panelVisibilities)
+			total += visible ? 1 : 0;
+
 		return total;
 	}
 
 	private void setPreferences(boolean dynamic)
 	{
 		//Set frame preferences
-		this.setUndecorated(dynamic);
-		this.setAlwaysOnTop(true);
-		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		this.addWindowListener(new WindowAdapter()
+		setUndecorated(dynamic);
+		setAlwaysOnTop(true);
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		addWindowListener(new WindowAdapter()
 		{
 			@Override
 			public void windowClosing(WindowEvent windowClosed)
 			{
 				openStatus = false;
-				dispose();
 			}
 		});
 	}
-	
+
 	private JPanel createDisplayPanel(String[] labelText, boolean[] displayOptions, int numVisible)
 	{
-		//Create panels
-		JPanel displayPanel = new JPanel();
-		GridLayout layout = new GridLayout(numVisible, 1);
-		displayPanel.setLayout(layout);
-		JPanel[] panels = new JPanel[labelText.length + 1];
-		colorPanel = new JPanel();
+		//Create panel
+		JPanel displayPanel = new JPanel(new GridLayout(numVisible, 1));
 
-		for (int i = 0; i < panels.length; i++)
-		{
-			panels[i] = new JPanel();
-			panels[i].setLayout(new FlowLayout(FlowLayout.LEFT));
-		}		
-		
-		//Create labels
-		dynamicLabels = new JLabel[labelText.length];
-		JLabel[] staticLabels = new JLabel[labelText.length];
+		//Create label preferences
 		Font labelFont = new Font("Monospaced", Font.BOLD, 12);
-		
+
 		for (int i = 0; i < labelText.length; i++)
-		{
-			if (displayOptions[i]) 
+			if (displayOptions[i])
 			{
-				//Create labels
-				staticLabels[i] = new JLabel(labelText[i]);
-				staticLabels[i].setFont(labelFont);
-				dynamicLabels[i] = new JLabel(labelText[i]);
-				
-				//Add labels to panels
-				panels[i].add(staticLabels[i]);
-				panels[i].add(dynamicLabels[i]);
-				
-				//Add smaller panels to display panel
-				displayPanel.add(panels[i]);
+				//Create label
+				JLabel staticLabel = new JLabel(labelText[i]);
+				staticLabel.setFont(labelFont);
+
+				//Add labels to panel
+				JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+				panel.add(staticLabel);
+				panel.add(dynamicLabels[i]);
+
+				//Add smaller panel to display panel
+				displayPanel.add(panel);
 			}
-		}
-		
+
 		if (displayOptions[labelText.length])
 			displayPanel.add(colorPanel);
 
@@ -111,21 +110,14 @@ public class DetailDisplay extends JFrame
 	{
 		//Set label text
 		for (int i = 0; i < labelText.length; i++)
-		{
-			if (dynamicLabels[i] != null) 
-			{
-				dynamicLabels[i].setText(labelText[i]);
-				dynamicLabels[i].repaint();
-			}
-		}
+			dynamicLabels[i].setText(labelText[i]);
 
 		//Resize frame
-		this.pack();
+		pack();
 	}
 
 	public void setColor(Color color)
 	{
-		//Set display color
 		colorPanel.setBackground(color);
 	}
 
@@ -164,6 +156,6 @@ public class DetailDisplay extends JFrame
 
 	public boolean getStatus()
 	{
-		return this.openStatus;
+		return openStatus;
 	}
 }
