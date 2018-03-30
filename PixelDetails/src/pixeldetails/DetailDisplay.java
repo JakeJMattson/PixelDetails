@@ -1,3 +1,8 @@
+/*
+ * Class Description:
+ * GUI - Displays the pixel information to users
+ */
+
 package pixeldetails;
 
 import java.awt.*;

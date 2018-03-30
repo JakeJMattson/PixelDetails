@@ -1,3 +1,11 @@
+/*
+ * Project Description:
+ * This project is designed to give various pixel information at the current mouse point.
+ *
+ * Class Description:
+ * Performs pixel reading and formats data into strings
+ */
+
 package pixeldetails;
 
 import java.awt.*;
