@@ -1,0 +1,1 @@
+typeSearchIndex = [{"p":"pixeldetails","l":"PixelReader"}]

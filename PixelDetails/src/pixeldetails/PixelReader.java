@@ -1,9 +1,6 @@
 /*
  * Project Description:
  * This project is designed to give various pixel information at the current mouse point.
- *
- * Class Description:
- * Performs pixel reading and formats data into strings
  */
 
 package pixeldetails;
@@ -12,19 +9,39 @@ import java.awt.*;
 
 import javax.swing.*;
 
+/**
+ * Performs pixel reading and formats data into strings
+ *
+ * @author mattson543
+ */
 public class PixelReader
 {
 	public static void main(String[] args)
 	{
-		//Begin program
-		PixelReader driver = new PixelReader();
-		driver.start();
-
-		//Terminate program after window closes
-		System.exit(0);
+		try
+		{
+			PixelReader driver = new PixelReader();
+			driver.setup();
+		}
+		catch (AWTException e)
+		{
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Failed to create Robot. Please try again.", "Internal Error!",
+					JOptionPane.ERROR_MESSAGE);
+		}
+		finally
+		{
+			System.exit(0);
+		}
 	}
 
-	public void start()
+	/**
+	 * Create all necessary components and start the program
+	 *
+	 * @throws AWTException
+	 *             In the event that the creation of the robot fails
+	 */
+	public void setup() throws AWTException
 	{
 		//Allow user to choose display options
 		String title = "Select desired info to display";
@@ -42,15 +59,28 @@ public class PixelReader
 				"Would you like the display to be dynamically placed near the mouse pointer?",
 				"Display options", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
 
-		//Create robot to get pixel color
-		Robot robot = createRobot();
-
 		//Create display
 		String[] staticLabelText = {"X,Y = ", "RGB = ", "HSV = ", "Hex = "};
 		DetailDisplay display = new DetailDisplay(staticLabelText, displayChoices, dynamic);
 
-		//While frame is open
-		while (display.getStatus())
+		//Create robot to get pixel color
+		Robot robot = new Robot();
+
+		//Start program
+		start(display, robot);
+	}
+
+	/**
+	 * Gets pixel info, formats it, then sends all information to the display
+	 *
+	 * @param display
+	 *            The display frame that is shown to the user
+	 * @param robot
+	 *            The Java Robot to get the pixel information
+	 */
+	private void start(DetailDisplay display, Robot robot)
+	{
+		while (display.isOpen())
 		{
 			//Get base info
 			Point mousePosition = MouseInfo.getPointerInfo().getLocation();
@@ -68,13 +98,20 @@ public class PixelReader
 			//Set display
 			String[] dynamicLabelText = {pos, rgb, hsv, hex};
 			display.setDynamicLabelText(dynamicLabelText);
-			display.setColor(pixelColor);
-
-			if (dynamic)
-				display.setPosition(mousePosition);
+			display.setPanelColor(pixelColor);
+			display.setPosition(mousePosition);
 		}
 	}
 
+	/**
+	 * Allow the user to choose what data they want to see
+	 *
+	 * @param title
+	 *            The title displayed at the top of the option pane
+	 * @param options
+	 *            The array of choices to be displayed to the user
+	 * @return A boolean array of user selections
+	 */
 	private static boolean[] displayOptions(String title, String[] options)
 	{
 		//Local variables
@@ -83,6 +120,7 @@ public class PixelReader
 		//Create check boxes
 		for (int i = 0; i < options.length; i++)
 		{
+			//Create new check box and check it
 			boxes[i] = new JCheckBox(options[i]);
 			boxes[i].setSelected(true);
 		}
@@ -106,21 +144,16 @@ public class PixelReader
 		return selections;
 	}
 
-	private Robot createRobot()
-	{
-		try
-		{
-			return new Robot();
-		}
-		catch (AWTException e)
-		{
-			return null;
-		}
-	}
-
+	/**
+	 * Convert the given RGB values into HSV values
+	 *
+	 * @param rgb
+	 *            An array of RGB values
+	 * @return An array of HSV values
+	 */
 	private int[] extractHSV(int[] rgb)
 	{
-		//Convert rgb to hsv
+		//Convert RGB to HSV
 		int[] hsv = new int[rgb.length];
 		float[] hsb = new float[rgb.length];
 		Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], hsb);
@@ -132,9 +165,18 @@ public class PixelReader
 		return hsv;
 	}
 
+	/**
+	 * Format pixel data to be displayed
+	 *
+	 * @param format
+	 *            The format string to be applied to the data
+	 * @param data
+	 *            The int array to be formatted
+	 * @return The formatted string
+	 */
 	private String format(String format, int[] data)
 	{
-		//Convert primitive ints to objects to prepare for cast to generic
+		//Convert primitive ints to Integers to prepare for cast to Object array
 		Integer[] dataAsObj = new Integer[data.length];
 
 		for (int i = 0; i < data.length; i++)

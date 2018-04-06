@@ -1,8 +1,3 @@
-/*
- * Class Description:
- * GUI - Displays the pixel information to users
- */
-
 package pixeldetails;
 
 import java.awt.*;
@@ -10,65 +5,78 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
+/**
+ * Displays the pixel information to users
+ *
+ * @author mattson543
+ */
 @SuppressWarnings("serial")
 public class DetailDisplay extends JFrame
 {
-	//Externally set components
+	/**
+	 * Array of labels that will be changed as the pixel under the mouse changes
+	 */
 	private JLabel[] dynamicLabels;
+	/**
+	 * Panel to display the color of the pixel that the mouse pointer is over
+	 */
 	private JPanel colorPanel;
+	/**
+	 * Determines whether or not the frame has been closed by the user
+	 */
+	private boolean isOpen = true;
+	/**
+	 * Determines whether or not to move the frame as the mouse moves
+	 */
+	private boolean isDynamic;
 
-	//Frame preferences
-	private boolean openStatus = true;
-
-	public DetailDisplay(String[] labelText, boolean[] displayOptions, boolean dynamic)
+	public DetailDisplay(String[] labelText, boolean[] isPanelVisible, boolean dynamic)
 	{
 		//Create frame
 		super();
-		setPreferences(dynamic);
-		init(labelText.length);
 
-		//Determine total number of visible panels
-		int numOfPanelsVisible = sumVisibility(displayOptions);
+		//Initialize
+		isDynamic = dynamic;
+		dynamicLabels = new JLabel[labelText.length];
+		setFramePreferences();
 
-		//Create panels
-		JPanel displayPanel = createDisplayPanel(labelText, displayOptions, numOfPanelsVisible);
+		//Create panel
+		JPanel displayPanel = createDisplayPanel(labelText, isPanelVisible);
 
-		if (dynamic)
+		if (isDynamic)
 			displayPanel.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK));
 
-		//Add panels to frame
+		//Add panel to frame
 		this.add(displayPanel);
 
 		//Show frame
 		setVisible(true);
 	}
 
-	private void init(int numOfLabels)
-	{
-		dynamicLabels = new JLabel[numOfLabels];
-
-		for (int i = 0; i < dynamicLabels.length; i++)
-			dynamicLabels[i] = new JLabel();
-
-		colorPanel = new JPanel();
-	}
-
-	private int sumVisibility(boolean[] panelVisibilities)
+	/**
+	 * Determine the number of panels that the user has requested to be created
+	 *
+	 * @param isPanelVisible
+	 *            Array of booleans that determine if the panel at the matching
+	 *            index should be created
+	 * @return Total number of visible panels
+	 */
+	private int countVisiblePanels(boolean[] isPanelVisible)
 	{
 		//Local variables
 		int total = 0;
 
 		//Sum visibilities from array
-		for (boolean visible : panelVisibilities)
-			total += visible ? 1 : 0;
+		for (boolean isVisible : isPanelVisible)
+			total += isVisible ? 1 : 0;
 
 		return total;
 	}
 
-	private void setPreferences(boolean dynamic)
+	private void setFramePreferences()
 	{
 		//Set frame preferences
-		setUndecorated(dynamic);
+		setUndecorated(isDynamic);
 		setAlwaysOnTop(true);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		addWindowListener(new WindowAdapter()
@@ -76,13 +84,26 @@ public class DetailDisplay extends JFrame
 			@Override
 			public void windowClosing(WindowEvent windowClosed)
 			{
-				openStatus = false;
+				isOpen = false;
 			}
 		});
 	}
 
-	private JPanel createDisplayPanel(String[] labelText, boolean[] displayOptions, int numVisible)
+	/**
+	 * Create all panels requested by the user
+	 *
+	 * @param labelText
+	 *            Array of strings that act as labels for the data
+	 * @param isPanelVisible
+	 *            Array of booleans that determine if the panel at the matching
+	 *            index should be created
+	 * @return The panel containing all info selected by the user
+	 */
+	private JPanel createDisplayPanel(String[] labelText, boolean[] isPanelVisible)
 	{
+		//Determine the total number of visible panels
+		int numVisible = countVisiblePanels(isPanelVisible);
+
 		//Create panel
 		JPanel displayPanel = new JPanel(new GridLayout(numVisible, 1));
 
@@ -90,11 +111,12 @@ public class DetailDisplay extends JFrame
 		Font labelFont = new Font("Monospaced", Font.BOLD, 12);
 
 		for (int i = 0; i < labelText.length; i++)
-			if (displayOptions[i])
+			if (isPanelVisible[i])
 			{
-				//Create label
+				//Create labels
 				JLabel staticLabel = new JLabel(labelText[i]);
 				staticLabel.setFont(labelFont);
+				dynamicLabels[i] = new JLabel();
 
 				//Add labels to panel
 				JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -105,12 +127,21 @@ public class DetailDisplay extends JFrame
 				displayPanel.add(panel);
 			}
 
-		if (displayOptions[labelText.length])
+		if (isPanelVisible[labelText.length])
+		{
+			colorPanel = new JPanel();
 			displayPanel.add(colorPanel);
+		}
 
 		return displayPanel;
 	}
 
+	/**
+	 * Set all dynamic label text and resize the frame to fit it
+	 *
+	 * @param labelText
+	 *            Array of strings to be displayed
+	 */
 	public void setDynamicLabelText(String[] labelText)
 	{
 		//Set label text
@@ -121,13 +152,28 @@ public class DetailDisplay extends JFrame
 		pack();
 	}
 
-	public void setColor(Color color)
+	/**
+	 * Set the background color of the color panel
+	 *
+	 * @param color
+	 *            New panel color
+	 */
+	public void setPanelColor(Color color)
 	{
 		colorPanel.setBackground(color);
 	}
 
+	/**
+	 * Set the position of the frame if dynamic placement was selected
+	 *
+	 * @param framePosition
+	 *            Point to represent the new location
+	 */
 	public void setPosition(Point framePosition)
 	{
+		if (!isDynamic)
+			return;
+
 		//Get screen info
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double screenWidth = screenSize.getWidth();
@@ -159,8 +205,8 @@ public class DetailDisplay extends JFrame
 		this.setLocation(framePosition);
 	}
 
-	public boolean getStatus()
+	public boolean isOpen()
 	{
-		return openStatus;
+		return isOpen;
 	}
 }
