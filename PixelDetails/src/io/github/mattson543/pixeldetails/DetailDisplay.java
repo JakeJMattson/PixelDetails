@@ -1,4 +1,4 @@
-package pixeldetails;
+package io.github.mattson543.pixeldetails;
 
 import java.awt.*;
 import java.awt.event.*;

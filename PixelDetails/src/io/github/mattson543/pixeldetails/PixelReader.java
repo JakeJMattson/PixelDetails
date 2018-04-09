@@ -1,9 +1,4 @@
-/*
- * Project Description:
- * This project is designed to give various pixel information at the current mouse point.
- */
-
-package pixeldetails;
+package io.github.mattson543.pixeldetails;
 
 import java.awt.*;
 
