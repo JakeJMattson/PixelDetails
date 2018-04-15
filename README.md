@@ -1,7 +1,7 @@
 # PixelDetails
 This project allows you to see the details of a pixel at the current location of the mouse pointer. The current build provides mouse pointer coordinates, RGB values, HSV values, Hex values, and a panel for you to view the pixel color in a larger area. This program is written purely in Java, meaning that it can run on all systems supported by Java. There are no additional libraries to configure.
 
-<img src="PixelDetails/demo/demo.gif" width="100%"/>
+<img src="PixelDetails/demo/demo.PNG" width="100%"/>
 
 ## Prerequisites
 
