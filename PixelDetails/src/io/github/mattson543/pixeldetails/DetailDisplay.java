@@ -6,7 +6,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 /**
- * Displays the pixel information to users
+ * Displays the pixel information to users.
  *
  * @author mattson543
  */
@@ -16,7 +16,7 @@ public class DetailDisplay extends JFrame
 	/**
 	 * Array of labels that will be changed as the pixel under the mouse changes
 	 */
-	private JLabel[] dynamicLabels;
+	private final JLabel[] dynamicLabels;
 	/**
 	 * Panel to display the color of the pixel that the mouse pointer is over
 	 */
@@ -28,7 +28,7 @@ public class DetailDisplay extends JFrame
 	/**
 	 * Determines whether or not to move the frame as the mouse moves
 	 */
-	private boolean isDynamic;
+	private final boolean isDynamic;
 
 	public DetailDisplay(String[] labelText, boolean[] isPanelVisible, boolean dynamic)
 	{
@@ -54,7 +54,7 @@ public class DetailDisplay extends JFrame
 	}
 
 	/**
-	 * Determine the number of panels that the user has requested to be created
+	 * Determine the number of panels that the user has requested to be created.
 	 *
 	 * @param isPanelVisible
 	 *            Array of booleans that determine if the panel at the matching
@@ -90,7 +90,7 @@ public class DetailDisplay extends JFrame
 	}
 
 	/**
-	 * Create all panels requested by the user
+	 * Create all panels requested by the user.
 	 *
 	 * @param labelText
 	 *            Array of strings that act as labels for the data
@@ -137,7 +137,7 @@ public class DetailDisplay extends JFrame
 	}
 
 	/**
-	 * Set all dynamic label text and resize the frame to fit it
+	 * Set all dynamic label text and resize the frame to fit it.
 	 *
 	 * @param labelText
 	 *            Array of strings to be displayed
@@ -146,14 +146,15 @@ public class DetailDisplay extends JFrame
 	{
 		//Set label text
 		for (int i = 0; i < labelText.length; i++)
-			dynamicLabels[i].setText(labelText[i]);
+			if (dynamicLabels[i] != null)
+				dynamicLabels[i].setText(labelText[i]);
 
 		//Resize frame
 		pack();
 	}
 
 	/**
-	 * Set the background color of the color panel
+	 * Set the background color of the color panel.
 	 *
 	 * @param color
 	 *            New panel color
@@ -164,7 +165,7 @@ public class DetailDisplay extends JFrame
 	}
 
 	/**
-	 * Set the position of the frame if dynamic placement was selected
+	 * Set the position of the frame if dynamic placement was selected.
 	 *
 	 * @param framePosition
 	 *            Point to represent the new location

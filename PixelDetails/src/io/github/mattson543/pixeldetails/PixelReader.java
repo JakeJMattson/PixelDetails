@@ -1,11 +1,13 @@
 package io.github.mattson543.pixeldetails;
 
 import java.awt.*;
+import java.util.*;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 
 /**
- * Performs pixel reading and formats data into strings
+ * Performs pixel reading and formats data into strings.
  *
  * @author mattson543
  */
@@ -31,7 +33,7 @@ public class PixelReader
 	}
 
 	/**
-	 * Create all necessary components and start the program
+	 * Create all necessary components and start the program.
 	 *
 	 * @throws AWTException
 	 *             In the event that the creation of the robot fails
@@ -49,14 +51,13 @@ public class PixelReader
 		if (displayChoices == null)
 			return;
 
-		//Allow user to choose placement options
-		boolean dynamic = JOptionPane.showConfirmDialog(null,
-				"Would you like the display to be dynamically placed near the mouse pointer?",
-				"Display options", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+		//Separate array
+		boolean[] infoChoices = Arrays.copyOfRange(displayChoices, 0, displayChoices.length - 1);
+		boolean isDynamic = displayChoices[displayChoices.length - 1];
 
 		//Create display
 		String[] staticLabelText = {"X,Y = ", "RGB = ", "HSV = ", "Hex = "};
-		DetailDisplay display = new DetailDisplay(staticLabelText, displayChoices, dynamic);
+		DetailDisplay display = new DetailDisplay(staticLabelText, infoChoices, isDynamic);
 
 		//Create robot to get pixel color
 		Robot robot = new Robot();
@@ -66,7 +67,87 @@ public class PixelReader
 	}
 
 	/**
-	 * Gets pixel info, formats it, then sends all information to the display
+	 * Allow the user to choose what data they want to see.
+	 *
+	 * @param title
+	 *            The title displayed at the top of the option pane
+	 * @param options
+	 *            The array of choices to be displayed to the user
+	 * @return A boolean array of user selections
+	 */
+	private static boolean[] displayOptions(String title, String[] options)
+	{
+		//Create panels
+		JPanel infoPanel = createCheckBoxPanel("Info to be displayed");
+		JPanel dynamicPanel = createCheckBoxPanel("Placement behavior");
+
+		ArrayList<JCheckBox> boxes = new ArrayList<>();
+
+		//Create check boxes
+		for (String option : options)
+		{
+			//Create new check box and check it
+			JCheckBox box = new JCheckBox(option);
+			box.setSelected(true);
+
+			//Add box to list
+			boxes.add(box);
+
+			//Add box to panel
+			infoPanel.add(box);
+		}
+
+		//Create dynamic option box
+		JCheckBox box = new JCheckBox("Dynamic placement");
+		box.setSelected(true);
+
+		//Add box to list
+		boxes.add(box);
+
+		//Add box to panel
+		dynamicPanel.add(box);
+
+		Object[] components = {infoPanel, dynamicPanel};
+
+		//Get choices from user
+		Object[] buttonText = {"Submit"};
+		int choice = JOptionPane.showOptionDialog(null, components, title, JOptionPane.PLAIN_MESSAGE,
+				JOptionPane.PLAIN_MESSAGE, null, buttonText, buttonText[0]);
+
+		boolean[] selections = null;
+
+		if (choice == JOptionPane.YES_OPTION)
+		{
+			selections = new boolean[boxes.size()];
+
+			for (int i = 0; i < boxes.size(); i++)
+				selections[i] = boxes.get(i).isSelected();
+		}
+
+		return selections;
+	}
+
+	/**
+	 * Create a panel that will hold check boxes.
+	 *
+	 * @param title
+	 *            "Title" of titled border
+	 * @return Panel
+	 */
+	private static JPanel createCheckBoxPanel(String title)
+	{
+		//Create new panel with a vertical layout
+		JPanel panel = new JPanel(new GridLayout(0, 1));
+
+		//Create a titled border around the panel
+		panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), title,
+				TitledBorder.LEFT, TitledBorder.TOP));
+
+		return panel;
+	}
+
+	/**
+	 * Gets pixel info, formats it, then sends all information to the display.
 	 *
 	 * @param display
 	 *            The display frame that is shown to the user
@@ -99,48 +180,7 @@ public class PixelReader
 	}
 
 	/**
-	 * Allow the user to choose what data they want to see
-	 *
-	 * @param title
-	 *            The title displayed at the top of the option pane
-	 * @param options
-	 *            The array of choices to be displayed to the user
-	 * @return A boolean array of user selections
-	 */
-	private static boolean[] displayOptions(String title, String[] options)
-	{
-		//Local variables
-		JCheckBox[] boxes = new JCheckBox[options.length];
-
-		//Create check boxes
-		for (int i = 0; i < options.length; i++)
-		{
-			//Create new check box and check it
-			boxes[i] = new JCheckBox(options[i]);
-			boxes[i].setSelected(true);
-		}
-
-		//Get choices from user
-		Object[] buttonText = {"Submit"};
-		int choice = JOptionPane.showOptionDialog(null, boxes, title, JOptionPane.PLAIN_MESSAGE,
-				JOptionPane.PLAIN_MESSAGE, null, buttonText, buttonText[0]);
-
-		//Return results based on button press
-		boolean[] selections = null;
-
-		if (choice == JOptionPane.YES_OPTION)
-		{
-			selections = new boolean[options.length];
-
-			for (int i = 0; i < boxes.length; i++)
-				selections[i] = boxes[i].isSelected();
-		}
-
-		return selections;
-	}
-
-	/**
-	 * Convert the given RGB values into HSV values
+	 * Convert the given RGB values into HSV values.
 	 *
 	 * @param rgb
 	 *            An array of RGB values
@@ -161,7 +201,7 @@ public class PixelReader
 	}
 
 	/**
-	 * Format pixel data to be displayed
+	 * Format pixel data to be displayed.
 	 *
 	 * @param format
 	 *            The format string to be applied to the data
