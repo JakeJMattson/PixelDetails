@@ -14,7 +14,7 @@ This project allows you to see the details of a pixel at the current location of
 
 ### Installing Java
 <p align="justify">
-Installing the Java Development Kit (JDK) is only a requirement for developers. Users who plan to solely use the program (run the pre-built JAR file) are only required to install the Java Runtime Environment (JRE). The minimum compiler compliance is 1.6, meaning that systems with installations of Java 6 and above can run the JAR. Simply install the version of your choice for your operating system, and you're ready to get some PixelDetails!
+Installing the Java Development Kit (JDK) is only a requirement for developers. Users who plan to solely use the program (run the pre-built JAR file) are only required to install the Java Runtime Environment (JRE). The minimum compiler compliance is 1.8, meaning that systems with installations of Java 8 and above can run the JAR. Simply install the version of your choice for your operating system, and you're ready to get some PixelDetails!
 </p>
 
 ## License
