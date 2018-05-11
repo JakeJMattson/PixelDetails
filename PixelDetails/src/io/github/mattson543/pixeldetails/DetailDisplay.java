@@ -22,7 +22,7 @@ public class DetailDisplay extends JFrame
 	 */
 	private JPanel colorPanel;
 	/**
-	 * Determines whether or not the frame has been closed by the user
+	 * Determines whether or not the frame has been closed
 	 */
 	private boolean isOpen = true;
 	/**
@@ -38,7 +38,12 @@ public class DetailDisplay extends JFrame
 		//Initialize
 		isDynamic = dynamic;
 		dynamicLabels = new JLabel[labelText.length];
-		setFramePreferences();
+
+		//Set frame preferences
+		setAlwaysOnTop(true);
+		setUndecorated(isDynamic);
+		addWindowListener(createWindowListener());
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		//Create panel
 		JPanel displayPanel = createDisplayPanel(labelText, isPanelVisible);
@@ -47,46 +52,29 @@ public class DetailDisplay extends JFrame
 			displayPanel.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK));
 
 		//Add panel to frame
-		this.add(displayPanel);
+		add(displayPanel);
 
 		//Show frame
 		setVisible(true);
 	}
 
 	/**
-	 * Determine the number of panels that the user has requested to be created.
+	 * Create a listener to monitor the frame closing event.
 	 *
-	 * @param isPanelVisible
-	 *            Array of booleans that determine if the panel at the matching
-	 *            index should be created
-	 * @return Total number of visible panels
+	 * @return WindowListener
 	 */
-	private int countVisiblePanels(boolean[] isPanelVisible)
+	private WindowListener createWindowListener()
 	{
-		//Local variables
-		int total = 0;
-
-		//Sum visibilities from array
-		for (boolean isVisible : isPanelVisible)
-			total += isVisible ? 1 : 0;
-
-		return total;
-	}
-
-	private void setFramePreferences()
-	{
-		//Set frame preferences
-		setUndecorated(isDynamic);
-		setAlwaysOnTop(true);
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		addWindowListener(new WindowAdapter()
+		WindowListener listener = new WindowAdapter()
 		{
 			@Override
 			public void windowClosing(WindowEvent windowClosed)
 			{
 				isOpen = false;
 			}
-		});
+		};
+
+		return listener;
 	}
 
 	/**
@@ -101,11 +89,8 @@ public class DetailDisplay extends JFrame
 	 */
 	private JPanel createDisplayPanel(String[] labelText, boolean[] isPanelVisible)
 	{
-		//Determine the total number of visible panels
-		int numVisible = countVisiblePanels(isPanelVisible);
-
 		//Create panel
-		JPanel displayPanel = new JPanel(new GridLayout(numVisible, 1));
+		JPanel displayPanel = new JPanel(new GridLayout(0, 1));
 
 		//Create label preferences
 		Font labelFont = new Font("Monospaced", Font.BOLD, 12);
@@ -161,7 +146,8 @@ public class DetailDisplay extends JFrame
 	 */
 	public void setPanelColor(Color color)
 	{
-		colorPanel.setBackground(color);
+		if (colorPanel != null)
+			colorPanel.setBackground(color);
 	}
 
 	/**

@@ -15,33 +15,17 @@ public class PixelReader
 {
 	public static void main(String[] args)
 	{
-		try
-		{
-			PixelReader driver = new PixelReader();
-			driver.setup();
-		}
-		catch (AWTException e)
-		{
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Failed to create Robot. Please try again.", "Internal Error!",
-					JOptionPane.ERROR_MESSAGE);
-		}
-		finally
-		{
-			System.exit(0);
-		}
+		PixelReader driver = new PixelReader();
+		driver.setup();
 	}
 
 	/**
 	 * Create all necessary components and start the program.
-	 *
-	 * @throws AWTException
-	 *             In the event that the creation of the robot fails
 	 */
-	public void setup() throws AWTException
+	public void setup()
 	{
 		//Allow user to choose display options
-		String title = "Select desired info to display";
+		String title = "Display options";
 		String[] options = {"Coordinates", "RGB", "HSV", "Hex", "Color bar"};
 
 		//Get user choices
@@ -59,11 +43,8 @@ public class PixelReader
 		String[] staticLabelText = {"X,Y = ", "RGB = ", "HSV = ", "Hex = "};
 		DetailDisplay display = new DetailDisplay(staticLabelText, infoChoices, isDynamic);
 
-		//Create robot to get pixel color
-		Robot robot = new Robot();
-
 		//Start program
-		start(display, robot);
+		start(display);
 	}
 
 	/**
@@ -107,9 +88,8 @@ public class PixelReader
 		//Add box to panel
 		dynamicPanel.add(box);
 
-		Object[] components = {infoPanel, dynamicPanel};
-
 		//Get choices from user
+		Object[] components = {infoPanel, dynamicPanel};
 		Object[] buttonText = {"Submit"};
 		int choice = JOptionPane.showOptionDialog(null, components, title, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.PLAIN_MESSAGE, null, buttonText, buttonText[0]);
@@ -147,22 +127,44 @@ public class PixelReader
 	}
 
 	/**
+	 * Create a new robot and handle the potential exception.
+	 *
+	 * @return Robot
+	 */
+	private Robot createRobot()
+	{
+		try
+		{
+			return new Robot();
+		}
+		catch (AWTException e)
+		{
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Failed to create Robot. Please try again.", "Internal Error!",
+					JOptionPane.ERROR_MESSAGE);
+
+			return null;
+		}
+	}
+
+	/**
 	 * Gets pixel info, formats it, then sends all information to the display.
 	 *
 	 * @param display
 	 *            The display frame that is shown to the user
-	 * @param robot
-	 *            The Java Robot to get the pixel information
 	 */
-	private void start(DetailDisplay display, Robot robot)
+	private void start(DetailDisplay display)
 	{
+		//Create robot to get pixel color
+		Robot robot = createRobot();
+
 		while (display.isOpen())
 		{
 			//Get base info
 			Point mousePosition = MouseInfo.getPointerInfo().getLocation();
 			Color pixelColor = robot.getPixelColor(mousePosition.x, mousePosition.y);
-			int[] rgbInfo = {pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue()};
 			int[] coord = {mousePosition.x, mousePosition.y};
+			int[] rgbInfo = {pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue()};
 			int[] hsvData = extractHSV(rgbInfo);
 
 			//Create strings to display
@@ -180,7 +182,7 @@ public class PixelReader
 	}
 
 	/**
-	 * Convert the given RGB values into HSV values.
+	 * Convert RGB values into HSV values.
 	 *
 	 * @param rgb
 	 *            An array of RGB values
