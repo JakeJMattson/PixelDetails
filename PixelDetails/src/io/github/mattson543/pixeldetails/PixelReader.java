@@ -1,7 +1,7 @@
 package io.github.mattson543.pixeldetails;
 
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -29,19 +29,20 @@ public class PixelReader
 		String[] options = {"Coordinates", "RGB", "HSV", "Hex", "Color bar"};
 
 		//Get user choices
-		boolean[] displayChoices = displayOptions(title, options);
+		boolean[][] displayChoices = displayOptions(title, options);
 
 		//If submit button not clicked, exit program
 		if (displayChoices == null)
 			return;
 
 		//Separate array
-		boolean[] infoChoices = Arrays.copyOfRange(displayChoices, 0, displayChoices.length - 1);
-		boolean isDynamic = displayChoices[displayChoices.length - 1];
+		boolean[] infoChoices = displayChoices[0];
+		boolean isDynamic = displayChoices[1][0];
+		boolean copyMode = displayChoices[2][0];
 
 		//Create display
 		String[] staticLabelText = {"X,Y = ", "RGB = ", "HSV = ", "Hex = "};
-		DetailDisplay display = new DetailDisplay(staticLabelText, infoChoices, isDynamic);
+		DetailDisplay display = new DetailDisplay(staticLabelText, infoChoices, isDynamic, copyMode);
 
 		//Start program
 		start(display);
@@ -52,17 +53,65 @@ public class PixelReader
 	 *
 	 * @param title
 	 *            The title displayed at the top of the option pane
-	 * @param options
+	 * @param infoOptions
 	 *            The array of choices to be displayed to the user
 	 * @return A boolean array of user selections
 	 */
-	private static boolean[] displayOptions(String title, String[] options)
+	private static boolean[][] displayOptions(String title, String[] infoOptions)
 	{
-		//Create panels
-		JPanel infoPanel = createCheckBoxPanel("Info to be displayed");
-		JPanel dynamicPanel = createCheckBoxPanel("Placement behavior");
-
 		ArrayList<JCheckBox> boxes = new ArrayList<>();
+
+		//Prepare args
+		String[] placementOptions = {"Dynamic placement"};
+		String[] copyOptions = {"Include labels"};
+
+		//Create panels
+		JPanel infoPanel = createCheckBoxPanel("Info to be displayed", boxes, infoOptions);
+		JPanel dynamicPanel = createCheckBoxPanel("Placement behavior", boxes, placementOptions);
+		JPanel copyPanel = createCheckBoxPanel("Copy format", boxes, copyOptions);
+
+		//Get choices from user
+		Object[] components = {infoPanel, dynamicPanel, copyPanel};
+		Object[] buttonText = {"Submit"};
+		int choice = JOptionPane.showOptionDialog(null, components, title, JOptionPane.PLAIN_MESSAGE,
+				JOptionPane.PLAIN_MESSAGE, null, buttonText, buttonText[0]);
+
+		boolean[][] selections = null;
+
+		if (choice == JOptionPane.YES_OPTION)
+		{
+			selections = new boolean[3][];
+			selections[0] = new boolean[infoOptions.length];
+			selections[1] = new boolean[placementOptions.length];
+			selections[2] = new boolean[copyOptions.length];
+
+			int index = 0;
+
+			for (int i = 0; i < selections.length; i++)
+				for (int j = 0; j < selections[i].length; j++)
+					selections[i][j] = boxes.get(index++).isSelected();
+		}
+
+		return selections;
+	}
+
+	/**
+	 * Create a panel that will hold check boxes.
+	 *
+	 * @param title
+	 *            "Title" of titled border
+	 * @param options
+	 * @param boxes
+	 * @return Panel
+	 */
+	private static JPanel createCheckBoxPanel(String title, ArrayList<JCheckBox> boxes, String[] options)
+	{
+		//Create new panel with a vertical layout
+		JPanel panel = new JPanel(new GridLayout(0, 1));
+
+		//Create a titled border around the panel
+		panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), title,
+				TitledBorder.LEFT, TitledBorder.TOP));
 
 		//Create check boxes
 		for (String option : options)
@@ -75,53 +124,8 @@ public class PixelReader
 			boxes.add(box);
 
 			//Add box to panel
-			infoPanel.add(box);
+			panel.add(box);
 		}
-
-		//Create dynamic option box
-		JCheckBox box = new JCheckBox("Dynamic placement");
-		box.setSelected(true);
-
-		//Add box to list
-		boxes.add(box);
-
-		//Add box to panel
-		dynamicPanel.add(box);
-
-		//Get choices from user
-		Object[] components = {infoPanel, dynamicPanel};
-		Object[] buttonText = {"Submit"};
-		int choice = JOptionPane.showOptionDialog(null, components, title, JOptionPane.PLAIN_MESSAGE,
-				JOptionPane.PLAIN_MESSAGE, null, buttonText, buttonText[0]);
-
-		boolean[] selections = null;
-
-		if (choice == JOptionPane.YES_OPTION)
-		{
-			selections = new boolean[boxes.size()];
-
-			for (int i = 0; i < boxes.size(); i++)
-				selections[i] = boxes.get(i).isSelected();
-		}
-
-		return selections;
-	}
-
-	/**
-	 * Create a panel that will hold check boxes.
-	 *
-	 * @param title
-	 *            "Title" of titled border
-	 * @return Panel
-	 */
-	private static JPanel createCheckBoxPanel(String title)
-	{
-		//Create new panel with a vertical layout
-		JPanel panel = new JPanel(new GridLayout(0, 1));
-
-		//Create a titled border around the panel
-		panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), title,
-				TitledBorder.LEFT, TitledBorder.TOP));
 
 		return panel;
 	}

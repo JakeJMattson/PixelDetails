@@ -18,7 +18,8 @@ public class CopyKeyPressListener implements KeyListener
 	public synchronized void keyPressed(KeyEvent e)
 	{
 		//Copy command (Ctrl + C) being pressed
-		shouldCopy = e.isControlDown() && e.getKeyCode() == KeyEvent.VK_C;
+		if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_C)
+			shouldCopy = true;
 	}
 
 	@Override
@@ -35,6 +36,12 @@ public class CopyKeyPressListener implements KeyListener
 
 	public boolean wasCopyRequested()
 	{
-		return shouldCopy;
+		//Save current state
+		boolean state = shouldCopy;
+
+		//Reset state
+		shouldCopy = false;
+
+		return state;
 	}
 }

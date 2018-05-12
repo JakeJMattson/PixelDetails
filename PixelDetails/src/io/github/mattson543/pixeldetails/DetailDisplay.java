@@ -15,6 +15,10 @@ import javax.swing.*;
 public class DetailDisplay extends JFrame
 {
 	/**
+	 * Array of text from static labels - used when requested during copying
+	 */
+	private final String[] staticText;
+	/**
 	 * Array of labels that will be changed as the pixel under the mouse changes
 	 */
 	private final JLabel[] dynamicLabels;
@@ -31,18 +35,24 @@ public class DetailDisplay extends JFrame
 	 */
 	private final boolean isDynamic;
 	/**
+	 * Determines whether or not to include static label text when copying
+	 */
+	private final boolean shouldCopyLabels;
+	/**
 	 * Listens for a request to copy the pixel information to the clip board
 	 */
 	private final CopyKeyPressListener copyListener;
 
-	public DetailDisplay(String[] labelText, boolean[] isPanelVisible, boolean dynamic)
+	public DetailDisplay(String[] labelText, boolean[] isPanelVisible, boolean dynamic, boolean copyMode)
 	{
 		//Create frame
 		super();
 
 		//Initialize
-		isDynamic = dynamic;
+		staticText = labelText;
 		dynamicLabels = new JLabel[labelText.length];
+		isDynamic = dynamic;
+		shouldCopyLabels = copyMode;
 		copyListener = new CopyKeyPressListener();
 
 		//Set frame preferences
@@ -53,7 +63,7 @@ public class DetailDisplay extends JFrame
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		//Create panel
-		JPanel displayPanel = createDisplayPanel(labelText, isPanelVisible);
+		JPanel displayPanel = createDisplayPanel(isPanelVisible);
 
 		if (isDynamic)
 			displayPanel.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK));
@@ -94,7 +104,7 @@ public class DetailDisplay extends JFrame
 	 *            index should be created
 	 * @return The panel containing all info selected by the user
 	 */
-	private JPanel createDisplayPanel(String[] labelText, boolean[] isPanelVisible)
+	private JPanel createDisplayPanel(boolean[] isPanelVisible)
 	{
 		//Create panel
 		JPanel displayPanel = new JPanel(new GridLayout(0, 1));
@@ -102,11 +112,11 @@ public class DetailDisplay extends JFrame
 		//Create label preferences
 		Font labelFont = new Font("Monospaced", Font.BOLD, 12);
 
-		for (int i = 0; i < labelText.length; i++)
+		for (int i = 0; i < staticText.length; i++)
 			if (isPanelVisible[i])
 			{
 				//Create labels
-				JLabel staticLabel = new JLabel(labelText[i]);
+				JLabel staticLabel = new JLabel(staticText[i]);
 				staticLabel.setFont(labelFont);
 				dynamicLabels[i] = new JLabel();
 
@@ -119,7 +129,7 @@ public class DetailDisplay extends JFrame
 				displayPanel.add(panel);
 			}
 
-		if (isPanelVisible[labelText.length])
+		if (isPanelVisible[staticText.length])
 		{
 			colorPanel = new JPanel();
 			displayPanel.add(colorPanel);
@@ -200,7 +210,7 @@ public class DetailDisplay extends JFrame
 	}
 
 	/**
-	 * Externally called to see if display frame is still open
+	 * Externally called to see if display frame is still open.
 	 *
 	 * @return Open status
 	 */
@@ -219,14 +229,23 @@ public class DetailDisplay extends JFrame
 			StringBuffer buffer = new StringBuffer();
 
 			//Get data being displays
-			for (JLabel label : dynamicLabels)
-				if (label != null)
-				{
-					String data = label.getText();
+			for (int i = 0; i < dynamicLabels.length; i++)
+			{
+				JLabel currentLabel = dynamicLabels[i];
 
-					if (!data.trim().equals(""))
+				if (currentLabel != null)
+				{
+					String data = currentLabel.getText();
+
+					if (!data.trim().isEmpty())
+					{
+						if (shouldCopyLabels)
+							buffer.append(staticText[i]);
+
 						buffer.append(data + System.lineSeparator());
+					}
 				}
+			}
 
 			//Send data to system clip board
 			StringSelection stringSelection = new StringSelection(buffer.toString());
