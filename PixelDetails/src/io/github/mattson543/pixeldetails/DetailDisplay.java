@@ -1,6 +1,7 @@
 package io.github.mattson543.pixeldetails;
 
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 
 import javax.swing.*;
@@ -29,6 +30,10 @@ public class DetailDisplay extends JFrame
 	 * Determines whether or not to move the frame as the mouse moves
 	 */
 	private final boolean isDynamic;
+	/**
+	 * Listens for a request to copy the pixel information to the clip board
+	 */
+	private final CopyKeyPressListener copyListener;
 
 	public DetailDisplay(String[] labelText, boolean[] isPanelVisible, boolean dynamic)
 	{
@@ -38,10 +43,12 @@ public class DetailDisplay extends JFrame
 		//Initialize
 		isDynamic = dynamic;
 		dynamicLabels = new JLabel[labelText.length];
+		copyListener = new CopyKeyPressListener();
 
 		//Set frame preferences
 		setAlwaysOnTop(true);
 		setUndecorated(isDynamic);
+		addKeyListener(copyListener);
 		addWindowListener(createWindowListener());
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -192,8 +199,38 @@ public class DetailDisplay extends JFrame
 		this.setLocation(framePosition);
 	}
 
+	/**
+	 * Externally called to see if display frame is still open
+	 *
+	 * @return Open status
+	 */
 	public boolean isOpen()
 	{
 		return isOpen;
+	}
+
+	/**
+	 * Copy pixel data to the clip board if requested by the user.
+	 */
+	public void copyIfRequested()
+	{
+		if (copyListener.wasCopyRequested())
+		{
+			StringBuffer buffer = new StringBuffer();
+
+			//Get data being displays
+			for (JLabel label : dynamicLabels)
+				if (label != null)
+				{
+					String data = label.getText();
+
+					if (!data.trim().equals(""))
+						buffer.append(data + System.lineSeparator());
+				}
+
+			//Send data to system clip board
+			StringSelection stringSelection = new StringSelection(buffer.toString());
+			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
+		}
 	}
 }

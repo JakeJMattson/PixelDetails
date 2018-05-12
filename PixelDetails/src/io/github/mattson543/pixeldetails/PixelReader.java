@@ -178,6 +178,7 @@ public class PixelReader
 			display.setDynamicLabelText(dynamicLabelText);
 			display.setPanelColor(pixelColor);
 			display.setPosition(mousePosition);
+			display.copyIfRequested();
 		}
 	}
 
