@@ -71,6 +71,12 @@ public class DetailDisplay extends JFrame
 		//Add panel to frame
 		add(displayPanel);
 
+		//Resize frame
+		pack();
+
+		if (!isDynamic)
+			this.setSize((int) (getWidth() * 1.4), getHeight());
+
 		//Show frame
 		setVisible(true);
 	}
@@ -152,7 +158,8 @@ public class DetailDisplay extends JFrame
 				dynamicLabels[i].setText(labelText[i]);
 
 		//Resize frame
-		pack();
+		if (isDynamic)
+			pack();
 	}
 
 	/**
