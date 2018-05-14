@@ -80,6 +80,7 @@ public class PixelReader
 
 		if (choice == JOptionPane.YES_OPTION)
 		{
+			//Create array
 			selections = new boolean[3][];
 			selections[0] = new boolean[infoOptions.length];
 			selections[1] = new boolean[placementOptions.length];
@@ -87,9 +88,28 @@ public class PixelReader
 
 			int index = 0;
 
+			//Store user selections
 			for (int i = 0; i < selections.length; i++)
 				for (int j = 0; j < selections[i].length; j++)
 					selections[i][j] = boxes.get(index++).isSelected();
+		}
+
+		if (selections != null)
+		{
+			boolean hasInfo = false;
+
+			//Check to see if any boxes were selected
+			for (boolean selection : selections[0])
+				if (selection)
+					hasInfo = true;
+
+			if (!hasInfo)
+			{
+				//Exit if no info boxes were selected
+				selections = null;
+				JOptionPane.showMessageDialog(null, "No info requested. Terminating.", "Error!",
+						JOptionPane.ERROR_MESSAGE);
+			}
 		}
 
 		return selections;
@@ -101,7 +121,9 @@ public class PixelReader
 	 * @param title
 	 *            "Title" of titled border
 	 * @param options
+	 *            Text for each check box
 	 * @param boxes
+	 *            Current list of boxes
 	 * @return Panel
 	 */
 	private static JPanel createCheckBoxPanel(String title, ArrayList<JCheckBox> boxes, String[] options)
