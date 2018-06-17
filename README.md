@@ -1,20 +1,39 @@
 # PixelDetails
+
+<p align="center">
+  <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">
+    <img src="https://img.shields.io/badge/Java-8-blue.svg" alt="Java 8">
+  </a>
+  <a href="LICENSE.md">
+    <img src="https://img.shields.io/github/license/mattson543/FacialRecognition.svg">
+  </a>
+</p>
+
 <p align="justify">
-This project allows you to see the details of a pixel at the current location of the mouse pointer. The current build provides mouse pointer coordinates, RGB values, HSV values, Hex values, and a panel for you to view the pixel color in a larger area. This program is written purely in Java, meaning that it can run on all systems supported by Java. There are no additional libraries to configure.
+This project allows you to see the details of a pixel at the current location of the mouse pointer. The current build provides mouse pointer coordinates, RGB values, HSV values, Hex values, and a panel for you to view the pixel color in a larger area.
 </p>
 
 <img src="PixelDetails/demo/demo.PNG" width="100%"/>
 
 ## Prerequisites
 
-### Java
-* [Java Downloads](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+### Languages
+* [Java](https://go.java/index.html?intcmp=gojava-banner-java-com)
+
+### Libraries
+* No additional libraries
 
 ## Getting Started
+<p align="justify">
+The minimum version requirements for each additional software are listed in the badges at the top of the readme.
+It is recommended that you install the most updated version at your time of installation.
+</p>
 
 ### Installing Java
 <p align="justify">
-Installing the Java Development Kit (JDK) is only a requirement for developers. Users who plan to solely use the program (run the pre-built JAR file) are only required to install the Java Runtime Environment (JRE). The minimum compiler compliance is 1.8, meaning that systems with installations of Java 8 and above can run the JAR. Simply install the version of your choice for your operating system, and you're ready to get some PixelDetails!
+Visit the <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java Downloads</a> 
+page and select the version of your choice.
+Run the installer and follow the instructions provided.
 </p>
 
 ## License
