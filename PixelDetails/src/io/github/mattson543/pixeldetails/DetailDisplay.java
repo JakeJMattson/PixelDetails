@@ -88,7 +88,7 @@ public class DetailDisplay extends JFrame
 	 */
 	private WindowListener createWindowListener()
 	{
-		WindowListener listener = new WindowAdapter()
+		return new WindowAdapter()
 		{
 			@Override
 			public void windowClosing(WindowEvent windowClosed)
@@ -96,8 +96,6 @@ public class DetailDisplay extends JFrame
 				isOpen = false;
 			}
 		};
-
-		return listener;
 	}
 
 	/**
@@ -233,7 +231,7 @@ public class DetailDisplay extends JFrame
 	{
 		if (copyListener.wasCopyRequested())
 		{
-			StringBuffer buffer = new StringBuffer();
+			StringBuilder buffer = new StringBuilder();
 
 			//Get data being displays
 			for (int i = 0; i < dynamicLabels.length; i++)

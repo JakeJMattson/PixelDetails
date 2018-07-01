@@ -59,6 +59,7 @@ public class PixelReader
 	 */
 	private static boolean[][] displayOptions(String title, String[] infoOptions)
 	{
+		//All boxes that will be presented to the user
 		ArrayList<JCheckBox> boxes = new ArrayList<>();
 
 		//Prepare args
@@ -101,7 +102,10 @@ public class PixelReader
 			//Check to see if any boxes were selected
 			for (boolean selection : selections[0])
 				if (selection)
+				{
 					hasInfo = true;
+					break;
+				}
 
 			if (!hasInfo)
 			{
@@ -120,10 +124,10 @@ public class PixelReader
 	 *
 	 * @param title
 	 *            "Title" of titled border
-	 * @param options
-	 *            Text for each check box
 	 * @param boxes
 	 *            Current list of boxes
+	 * @param options
+	 *            Text for each check box
 	 * @return Panel
 	 */
 	private static JPanel createCheckBoxPanel(String title, ArrayList<JCheckBox> boxes, String[] options)
@@ -165,8 +169,7 @@ public class PixelReader
 		}
 		catch (AWTException e)
 		{
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Failed to create Robot. Please try again.", "Internal Error!",
+			JOptionPane.showMessageDialog(null, "Failed to create Robot.", "Internal Error!",
 					JOptionPane.ERROR_MESSAGE);
 
 			return null;
@@ -183,6 +186,9 @@ public class PixelReader
 	{
 		//Create robot to get pixel color
 		Robot robot = createRobot();
+
+		if (robot == null)
+			return;
 
 		while (display.isOpen())
 		{
