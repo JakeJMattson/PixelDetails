@@ -24,12 +24,8 @@ public class PixelReader
 	 */
 	public void setup()
 	{
-		//Allow user to choose display options
-		String title = "Display options";
-		String[] options = {"Coordinates", "RGB", "HSV", "Hex", "Color bar"};
-
 		//Get user choices
-		boolean[][] displayChoices = displayOptions(title, options);
+		boolean[][] displayChoices = displayOptions();
 
 		//If submit button not clicked, exit program
 		if (displayChoices == null)
@@ -51,25 +47,33 @@ public class PixelReader
 	/**
 	 * Allow the user to choose what data they want to see.
 	 *
-	 * @param title
-	 *            The title displayed at the top of the option pane
-	 * @param infoOptions
-	 *            The array of choices to be displayed to the user
 	 * @return A boolean array of user selections
 	 */
-	private static boolean[][] displayOptions(String title, String[] infoOptions)
+	private static boolean[][] displayOptions()
 	{
 		//All boxes that will be presented to the user
 		ArrayList<JCheckBox> boxes = new ArrayList<>();
 
 		//Prepare args
+		String title = "Display options";
+		String[] infoOptions = {"Coordinates", "RGB", "HSV", "Hex", "Color bar"};
 		String[] placementOptions = {"Dynamic placement"};
 		String[] copyOptions = {"Include labels"};
 
+		String[] infoTooltips = {
+				"Location (X,Y) of the mouse on the screen",
+				"Pixel color as 'Red, Green, Blue' values",
+				"Pixel color as 'Hue, Saturation, Value' values",
+				"Pixel color as Hexidecimal value",
+				"Pixel color on a larger display"
+		};
+		String[] placeTooltips = {"Allow the frame to \"follow\" the mouse pointer"};
+		String[] copyTooltips = {"Static labels will be copied along with dynamic data"};
+
 		//Create panels
-		JPanel infoPanel = createCheckBoxPanel("Info to be displayed", boxes, infoOptions);
-		JPanel dynamicPanel = createCheckBoxPanel("Placement behavior", boxes, placementOptions);
-		JPanel copyPanel = createCheckBoxPanel("Copy format", boxes, copyOptions);
+		JPanel infoPanel = createCheckBoxPanel("Info to be displayed", boxes, infoOptions, infoTooltips);
+		JPanel dynamicPanel = createCheckBoxPanel("Placement behavior", boxes, placementOptions, placeTooltips);
+		JPanel copyPanel = createCheckBoxPanel("Copy format", boxes, copyOptions, copyTooltips);
 
 		//Get choices from user
 		Object[] components = {infoPanel, dynamicPanel, copyPanel};
@@ -79,41 +83,38 @@ public class PixelReader
 
 		boolean[][] selections = null;
 
-		if (choice == JOptionPane.YES_OPTION)
-		{
-			//Create array
-			selections = new boolean[3][];
-			selections[0] = new boolean[infoOptions.length];
-			selections[1] = new boolean[placementOptions.length];
-			selections[2] = new boolean[copyOptions.length];
+		if (choice != JOptionPane.YES_OPTION)
+			return null;
 
-			int index = 0;
+		//Create array
+		selections = new boolean[3][];
+		selections[0] = new boolean[infoOptions.length];
+		selections[1] = new boolean[placementOptions.length];
+		selections[2] = new boolean[copyOptions.length];
 
-			//Store user selections
-			for (int i = 0; i < selections.length; i++)
-				for (int j = 0; j < selections[i].length; j++)
-					selections[i][j] = boxes.get(index++).isSelected();
-		}
+		int index = 0;
 
-		if (selections != null)
-		{
-			boolean hasInfo = false;
+		//Store user selections
+		for (int i = 0; i < selections.length; i++)
+			for (int j = 0; j < selections[i].length; j++)
+				selections[i][j] = boxes.get(index++).isSelected();
 
-			//Check to see if any boxes were selected
-			for (boolean selection : selections[0])
-				if (selection)
-				{
-					hasInfo = true;
-					break;
-				}
+		boolean hasInfo = false;
 
-			if (!hasInfo)
+		//Check to see if any boxes were selected
+		for (boolean selection : selections[0])
+			if (selection)
 			{
-				//Exit if no info boxes were selected
-				selections = null;
-				JOptionPane.showMessageDialog(null, "No info requested. Terminating.", "Error!",
-						JOptionPane.ERROR_MESSAGE);
+				hasInfo = true;
+				break;
 			}
+
+		if (!hasInfo)
+		{
+			//Exit if no info boxes were selected
+			selections = null;
+			JOptionPane.showMessageDialog(null, "No info requested. Terminating.", "Error!",
+					JOptionPane.ERROR_MESSAGE);
 		}
 
 		return selections;
@@ -128,9 +129,11 @@ public class PixelReader
 	 *            Current list of boxes
 	 * @param options
 	 *            Text for each check box
+	 * @param tooltips
 	 * @return Panel
 	 */
-	private static JPanel createCheckBoxPanel(String title, ArrayList<JCheckBox> boxes, String[] options)
+	private static JPanel createCheckBoxPanel(String title, ArrayList<JCheckBox> boxes, String[] options,
+			String[] tooltips)
 	{
 		//Create new panel with a vertical layout
 		JPanel panel = new JPanel(new GridLayout(0, 1));
@@ -140,11 +143,12 @@ public class PixelReader
 				TitledBorder.LEFT, TitledBorder.TOP));
 
 		//Create check boxes
-		for (String option : options)
+		for (int i = 0; i < options.length; i++)
 		{
-			//Create new check box and check it
-			JCheckBox box = new JCheckBox(option);
+			//Create new check box
+			JCheckBox box = new JCheckBox(options[i]);
 			box.setSelected(true);
+			box.setToolTipText(tooltips[i]);
 
 			//Add box to list
 			boxes.add(box);
