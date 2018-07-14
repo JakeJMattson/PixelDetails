@@ -1,4 +1,4 @@
-package io.github.mattson543.pixeldetails;
+package io.github.JakeJMattson.pixeldetails;
 
 import java.awt.event.*;
 import java.io.Serializable;
@@ -6,7 +6,7 @@ import java.io.Serializable;
 /**
  * KeyListner to detect a keyboard copy request.
  *
- * @author mattson543
+ * @author JakeJMattson
  */
 @SuppressWarnings("serial")
 public class CopyKeyPressListener implements KeyListener, Serializable

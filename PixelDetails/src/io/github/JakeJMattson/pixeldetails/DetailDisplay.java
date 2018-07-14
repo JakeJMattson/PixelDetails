@@ -1,4 +1,4 @@
-package io.github.mattson543.pixeldetails;
+package io.github.JakeJMattson.pixeldetails;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
@@ -9,7 +9,7 @@ import javax.swing.*;
 /**
  * Displays the pixel information to users.
  *
- * @author mattson543
+ * @author JakeJMattson
  */
 @SuppressWarnings("serial")
 public class DetailDisplay extends JFrame

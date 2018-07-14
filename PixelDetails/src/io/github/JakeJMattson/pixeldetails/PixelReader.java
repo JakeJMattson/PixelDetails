@@ -1,4 +1,4 @@
-package io.github.mattson543.pixeldetails;
+package io.github.JakeJMattson.pixeldetails;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import javax.swing.border.TitledBorder;
 /**
  * Performs pixel reading and formats data into strings.
  *
- * @author mattson543
+ * @author JakeJMattson
  */
 public class PixelReader
 {
