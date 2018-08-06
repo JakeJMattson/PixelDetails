@@ -14,7 +14,9 @@
 This project allows you to see the details of a pixel at the current location of the mouse pointer. The current build provides mouse pointer coordinates, RGB values, HSV values, Hex values, and a panel for you to view the pixel color in a larger area.
 </p>
 
-<img src="PixelDetails/demo/demo.PNG" width="100%"/>
+
+
+<img src="https://user-images.githubusercontent.com/22604455/43696005-92264226-9901-11e8-849a-68ec2249882a.PNG" width="100%"/>
 
 ## Prerequisites
 
