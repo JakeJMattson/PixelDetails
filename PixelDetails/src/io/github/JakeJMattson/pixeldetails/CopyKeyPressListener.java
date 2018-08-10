@@ -30,16 +30,10 @@ public class CopyKeyPressListener implements KeyListener, Serializable
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e)
-	{
-		//Unused but required
-	}
+	public void keyReleased(KeyEvent e) {}
 
 	@Override
-	public void keyTyped(KeyEvent e)
-	{
-		//Unused but required
-	}
+	public void keyTyped(KeyEvent e) {}
 
 	public boolean wasCopyRequested()
 	{

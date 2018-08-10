@@ -43,7 +43,7 @@ public class DetailDisplay extends JFrame
 	 */
 	private final CopyKeyPressListener copyListener;
 
-	public DetailDisplay(String[] labelText, boolean[] isPanelVisible, boolean dynamic, boolean copyMode)
+	public DetailDisplay(String[] labelText, boolean[] isPanelVisible, boolean isDynamic, boolean shouldCopyLabels)
 	{
 		//Create frame
 		super();
@@ -51,8 +51,8 @@ public class DetailDisplay extends JFrame
 		//Initialize
 		staticText = labelText;
 		dynamicLabels = new JLabel[labelText.length];
-		isDynamic = dynamic;
-		shouldCopyLabels = copyMode;
+		this.isDynamic = isDynamic;
+		this.shouldCopyLabels = shouldCopyLabels;
 		copyListener = new CopyKeyPressListener();
 
 		//Set frame preferences
@@ -101,8 +101,6 @@ public class DetailDisplay extends JFrame
 	/**
 	 * Create all panels requested by the user.
 	 *
-	 * @param labelText
-	 *            Array of strings that act as labels for the data
 	 * @param isPanelVisible
 	 *            Array of booleans that determine if the panel at the matching
 	 *            index should be created

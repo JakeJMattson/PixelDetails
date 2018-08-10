@@ -1,7 +1,7 @@
 package io.github.JakeJMattson.pixeldetails;
 
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -34,11 +34,11 @@ public class PixelReader
 		//Separate array
 		boolean[] infoChoices = displayChoices[0];
 		boolean isDynamic = displayChoices[1][0];
-		boolean copyMode = displayChoices[2][0];
+		boolean shouldCopyLabels = displayChoices[2][0];
 
 		//Create display
 		String[] staticLabelText = {"X,Y = ", "RGB = ", "HSV = ", "Hex = "};
-		DetailDisplay display = new DetailDisplay(staticLabelText, infoChoices, isDynamic, copyMode);
+		DetailDisplay display = new DetailDisplay(staticLabelText, infoChoices, isDynamic, shouldCopyLabels);
 
 		//Start program
 		start(display);
@@ -51,65 +51,35 @@ public class PixelReader
 	 */
 	private static boolean[][] displayOptions()
 	{
-		//All boxes that will be presented to the user
-		ArrayList<JCheckBox> boxes = new ArrayList<>();
-
 		//Prepare args
-		String title = "Display options";
-		String[] infoOptions = {"Coordinates", "RGB", "HSV", "Hex", "Color bar"};
-		String[] placementOptions = {"Dynamic placement"};
-		String[] copyOptions = {"Include labels"};
+		SectionPanel info = new SectionPanel("Info to be displayed");
+		info.addCheckBox("Coordinates", "Location (X,Y) of the mouse on the screen");
+		info.addCheckBox("RGB", "Pixel color as 'Red, Green, Blue' values");
+		info.addCheckBox("HSV", "Pixel color as 'Hue, Saturation, Value' values");
+		info.addCheckBox("Hex", "Pixel color as Hexidecimal value");
+		info.addCheckBox("Color bar", "Pixel color on a larger display");
 
-		String[] infoTooltips = {
-				"Location (X,Y) of the mouse on the screen",
-				"Pixel color as 'Red, Green, Blue' values",
-				"Pixel color as 'Hue, Saturation, Value' values",
-				"Pixel color as Hexidecimal value",
-				"Pixel color on a larger display"
-		};
-		String[] placeTooltips = {"Allow the frame to \"follow\" the mouse pointer"};
-		String[] copyTooltips = {"Static labels will be copied along with dynamic data"};
+		SectionPanel placement = new SectionPanel("Placement behavior");
+		placement.addCheckBox("Dynamic placement", "Allow the frame to \"follow\" the mouse pointer");
 
-		//Create panels
-		JPanel infoPanel = createCheckBoxPanel("Info to be displayed", boxes, infoOptions, infoTooltips);
-		JPanel dynamicPanel = createCheckBoxPanel("Placement behavior", boxes, placementOptions, placeTooltips);
-		JPanel copyPanel = createCheckBoxPanel("Copy format", boxes, copyOptions, copyTooltips);
+		SectionPanel copy = new SectionPanel("Copy format");
+		copy.addCheckBox("Include labels", "Static labels will be copied along with dynamic data");
 
 		//Get choices from user
-		Object[] components = {infoPanel, dynamicPanel, copyPanel};
+		Object[] components = {info, placement, copy};
 		Object[] buttonText = {"Submit"};
-		int choice = JOptionPane.showOptionDialog(null, components, title, JOptionPane.PLAIN_MESSAGE,
+		int choice = JOptionPane.showOptionDialog(null, components, "Display options", JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.PLAIN_MESSAGE, null, buttonText, buttonText[0]);
-
-		boolean[][] selections = null;
 
 		if (choice != JOptionPane.YES_OPTION)
 			return null;
 
-		//Create array
-		selections = new boolean[3][];
-		selections[0] = new boolean[infoOptions.length];
-		selections[1] = new boolean[placementOptions.length];
-		selections[2] = new boolean[copyOptions.length];
+		boolean[][] selections = new boolean[3][];
+		selections[0] = info.getSelections();
+		selections[1] = placement.getSelections();
+		selections[2] = copy.getSelections();
 
-		int index = 0;
-
-		//Store user selections
-		for (int i = 0; i < selections.length; i++)
-			for (int j = 0; j < selections[i].length; j++)
-				selections[i][j] = boxes.get(index++).isSelected();
-
-		boolean hasInfo = false;
-
-		//Check to see if any boxes were selected
-		for (boolean selection : selections[0])
-			if (selection)
-			{
-				hasInfo = true;
-				break;
-			}
-
-		if (!hasInfo)
+		if (!containsTrue(selections[0]))
 		{
 			//Exit if no info boxes were selected
 			selections = null;
@@ -120,64 +90,13 @@ public class PixelReader
 		return selections;
 	}
 
-	/**
-	 * Create a panel that will hold check boxes.
-	 *
-	 * @param title
-	 *            "Title" of titled border
-	 * @param boxes
-	 *            Current list of boxes
-	 * @param options
-	 *            Text for each check box
-	 * @param tooltips
-	 * @return Panel
-	 */
-	private static JPanel createCheckBoxPanel(String title, ArrayList<JCheckBox> boxes, String[] options,
-			String[] tooltips)
+	private static boolean containsTrue(boolean[] boolArray)
 	{
-		//Create new panel with a vertical layout
-		JPanel panel = new JPanel(new GridLayout(0, 1));
+		for (boolean value: boolArray)
+			if(value)
+				return true;
 
-		//Create a titled border around the panel
-		panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), title,
-				TitledBorder.LEFT, TitledBorder.TOP));
-
-		//Create check boxes
-		for (int i = 0; i < options.length; i++)
-		{
-			//Create new check box
-			JCheckBox box = new JCheckBox(options[i]);
-			box.setSelected(true);
-			box.setToolTipText(tooltips[i]);
-
-			//Add box to list
-			boxes.add(box);
-
-			//Add box to panel
-			panel.add(box);
-		}
-
-		return panel;
-	}
-
-	/**
-	 * Create a new robot and handle the potential exception.
-	 *
-	 * @return Robot
-	 */
-	private Robot createRobot()
-	{
-		try
-		{
-			return new Robot();
-		}
-		catch (AWTException e)
-		{
-			JOptionPane.showMessageDialog(null, "Failed to create Robot.", "Internal Error!",
-					JOptionPane.ERROR_MESSAGE);
-
-			return null;
-		}
+		return false;
 	}
 
 	/**
@@ -215,6 +134,26 @@ public class PixelReader
 			display.setPanelColor(pixelColor);
 			display.setPosition(mousePosition);
 			display.copyIfRequested();
+		}
+	}
+
+	/**
+	 * Create a new robot and handle the potential exception.
+	 *
+	 * @return Robot
+	 */
+	private Robot createRobot()
+	{
+		try
+		{
+			return new Robot();
+		}
+		catch (AWTException e)
+		{
+			JOptionPane.showMessageDialog(null, "Failed to create Robot.", "Internal Error!",
+					JOptionPane.ERROR_MESSAGE);
+
+			return null;
 		}
 	}
 
