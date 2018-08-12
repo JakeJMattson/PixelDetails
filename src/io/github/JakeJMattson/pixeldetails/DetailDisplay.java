@@ -12,8 +12,16 @@ import javax.swing.*;
  * @author JakeJMattson
  */
 @SuppressWarnings("serial")
-public class DetailDisplay extends JFrame
+public class DetailDisplay
 {
+	/**
+	 * Frame to contain all GUI components
+	 */
+	private JFrame frame;
+	/**
+	 * Panel to display the color of the pixel that the mouse pointer is over
+	 */
+	private JPanel colorPanel;
 	/**
 	 * Array of text from static labels - used when requested during copying
 	 */
@@ -22,10 +30,6 @@ public class DetailDisplay extends JFrame
 	 * Array of labels that will be changed as the pixel under the mouse changes
 	 */
 	private final JLabel[] dynamicLabels;
-	/**
-	 * Panel to display the color of the pixel that the mouse pointer is over
-	 */
-	private JPanel colorPanel;
 	/**
 	 * Determines whether or not the frame has been closed
 	 */
@@ -46,7 +50,7 @@ public class DetailDisplay extends JFrame
 	public DetailDisplay(String[] labelText, boolean[] isPanelVisible, boolean isDynamic, boolean shouldCopyLabels)
 	{
 		//Create frame
-		super();
+		frame = new JFrame();
 
 		//Initialize
 		staticText = labelText;
@@ -56,11 +60,11 @@ public class DetailDisplay extends JFrame
 		copyListener = new CopyKeyPressListener();
 
 		//Set frame preferences
-		setAlwaysOnTop(true);
-		setUndecorated(isDynamic);
-		addKeyListener(copyListener);
-		addWindowListener(createWindowListener());
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		frame.setAlwaysOnTop(true);
+		frame.setUndecorated(isDynamic);
+		frame.addKeyListener(copyListener);
+		frame.addWindowListener(createWindowListener());
+		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		//Create panel
 		JPanel displayPanel = createDisplayPanel(isPanelVisible);
@@ -69,16 +73,16 @@ public class DetailDisplay extends JFrame
 			displayPanel.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK));
 
 		//Add panel to frame
-		add(displayPanel);
+		frame.add(displayPanel);
 
 		//Resize frame
-		pack();
+		frame.pack();
 
 		if (!isDynamic)
-			this.setSize((int) (getWidth() * 1.4), getHeight());
+			frame.setSize((int) (frame.getWidth() * 1.4), frame.getHeight());
 
 		//Show frame
-		setVisible(true);
+		frame.setVisible(true);
 	}
 
 	/**
@@ -155,7 +159,7 @@ public class DetailDisplay extends JFrame
 
 		//Resize frame
 		if (isDynamic)
-			pack();
+			frame.pack();
 	}
 
 	/**
@@ -187,7 +191,7 @@ public class DetailDisplay extends JFrame
 		double screenHeight = screenSize.getHeight();
 
 		//Get frame info
-		Rectangle frameBounds = this.getBounds();
+		Rectangle frameBounds = frame.getBounds();
 		int frameHeight = frameBounds.height;
 		int frameWidth = frameBounds.width;
 
@@ -209,7 +213,7 @@ public class DetailDisplay extends JFrame
 		else
 			framePosition.y += buffer;
 
-		this.setLocation(framePosition);
+		frame.setLocation(framePosition);
 	}
 
 	/**
