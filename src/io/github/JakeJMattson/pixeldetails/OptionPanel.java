@@ -4,9 +4,9 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 
-public class SectionPanel extends JPanel
+class OptionPanel extends JPanel
 {
-	public SectionPanel(String title)
+	OptionPanel(String title)
 	{
 		//Create panel
 		super();
@@ -17,7 +17,7 @@ public class SectionPanel extends JPanel
 				TitledBorder.LEFT, TitledBorder.TOP));
 	}
 
-	public void addCheckBox(String boxText, String tooltip)
+	void addCheckBox(String boxText, String tooltip)
 	{
 		//Create check box
 		JCheckBox box = new JCheckBox(boxText);
@@ -28,7 +28,7 @@ public class SectionPanel extends JPanel
 		this.add(box);
 	}
 
-	public boolean[] getSelections()
+	boolean[] getSelections()
 	{
 		//Get components from panel
 		Component[] checkBoxes = this.getComponents();

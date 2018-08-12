@@ -1,10 +1,9 @@
 package io.github.JakeJMattson.pixeldetails;
 
-import java.awt.*;
-import java.util.*;
+		import java.awt.*;
+		import java.util.*;
 
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
+		import javax.swing.*;
 
 /**
  * Performs pixel reading and formats data into strings.
@@ -22,8 +21,14 @@ public class PixelReader
 	/**
 	 * Create all necessary components and start the program.
 	 */
-	public void setup()
+	private void setup()
 	{
+		//Create robot to get pixel color
+		Robot robot = createRobot();
+
+		if (robot == null)
+			return;
+
 		//Get user choices
 		boolean[][] displayChoices = displayOptions();
 
@@ -37,11 +42,14 @@ public class PixelReader
 		boolean shouldCopyLabels = displayChoices[2][0];
 
 		//Create display
-		String[] staticLabelText = {"X,Y = ", "RGB = ", "HSV = ", "Hex = "};
-		DetailDisplay display = new DetailDisplay(staticLabelText, infoChoices, isDynamic, shouldCopyLabels);
+		ActionPanel[] panels = createPanels(infoChoices);
+		DetailDisplay display = new DetailDisplay(panels, isDynamic, shouldCopyLabels);
 
-		//Start program
-		start(display);
+		while (display.isOpen())
+		{
+			display.updateComponents(robot);
+			display.copyIfRequested();
+		}
 	}
 
 	/**
@@ -52,23 +60,23 @@ public class PixelReader
 	private static boolean[][] displayOptions()
 	{
 		//Prepare args
-		SectionPanel info = new SectionPanel("Info to be displayed");
+		OptionPanel info = new OptionPanel("Info to be displayed");
 		info.addCheckBox("Coordinates", "Location (X,Y) of the mouse on the screen");
 		info.addCheckBox("RGB", "Pixel color as 'Red, Green, Blue' values");
 		info.addCheckBox("HSV", "Pixel color as 'Hue, Saturation, Value' values");
 		info.addCheckBox("Hex", "Pixel color as Hexidecimal value");
 		info.addCheckBox("Color bar", "Pixel color on a larger display");
 
-		SectionPanel placement = new SectionPanel("Placement behavior");
+		OptionPanel placement = new OptionPanel("Placement behavior");
 		placement.addCheckBox("Dynamic placement", "Allow the frame to \"follow\" the mouse pointer");
 
-		SectionPanel copy = new SectionPanel("Copy format");
+		OptionPanel copy = new OptionPanel("Copy format");
 		copy.addCheckBox("Include labels", "Static labels will be copied along with dynamic data");
 
 		//Get choices from user
 		Object[] components = {info, placement, copy};
 		Object[] buttonText = {"Submit"};
-		int choice = JOptionPane.showOptionDialog(null, components, "Display options", JOptionPane.PLAIN_MESSAGE,
+		int choice = JOptionPane.showOptionDialog(null, components, "Display options", JOptionPane.DEFAULT_OPTION,
 				JOptionPane.PLAIN_MESSAGE, null, buttonText, buttonText[0]);
 
 		if (choice != JOptionPane.YES_OPTION)
@@ -79,62 +87,57 @@ public class PixelReader
 		selections[1] = placement.getSelections();
 		selections[2] = copy.getSelections();
 
-		if (!containsTrue(selections[0]))
-		{
-			//Exit if no info boxes were selected
-			selections = null;
-			JOptionPane.showMessageDialog(null, "No info requested. Terminating.", "Error!",
-					JOptionPane.ERROR_MESSAGE);
-		}
-
 		return selections;
 	}
 
-	private static boolean containsTrue(boolean[] boolArray)
+	private ActionPanel[] createPanels(boolean[] selections)
 	{
-		for (boolean value: boolArray)
-			if(value)
-				return true;
+		ArrayList<ActionPanel> panels = new ArrayList<>();
 
-		return false;
-	}
-
-	/**
-	 * Gets pixel info, formats it, then sends all information to the display.
-	 *
-	 * @param display
-	 *            The display frame that is shown to the user
-	 */
-	private void start(DetailDisplay display)
-	{
-		//Create robot to get pixel color
-		Robot robot = createRobot();
-
-		if (robot == null)
-			return;
-
-		while (display.isOpen())
+		if (selections[0])
 		{
-			//Get base info
-			Point mousePosition = MouseInfo.getPointerInfo().getLocation();
-			Color pixelColor = robot.getPixelColor(mousePosition.x, mousePosition.y);
-			int[] coord = {mousePosition.x, mousePosition.y};
-			int[] rgbInfo = {pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue()};
-			int[] hsvData = extractHSV(rgbInfo);
+			Action action = (pixelColor, mouse) ->
+			{
+				int[] coordinates = {mouse.x, mouse.y};
+				return format("(%s, %s)", coordinates);
+			};
 
-			//Create strings to display
-			String pos = format("(%s, %s)", coord);
-			String rgb = format("(%s, %s, %s)", rgbInfo);
-			String hsv = format("(%s%%, %s%%, %s%%)", hsvData);
-			String hex = format("#%02X%02X%02X", rgbInfo);
-
-			//Set display
-			String[] dynamicLabelText = {pos, rgb, hsv, hex};
-			display.setDynamicLabelText(dynamicLabelText);
-			display.setPanelColor(pixelColor);
-			display.setPosition(mousePosition);
-			display.copyIfRequested();
+			panels.add(new ActionPanel("X,Y = ", action));
 		}
+		if (selections[1])
+		{
+			Action action = (pixelColor, mouse) ->
+			{
+				int[] rgbInfo = {pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue()};
+				return format("(%s, %s, %s)", rgbInfo);
+			};
+
+			panels.add(new ActionPanel("RGB = ", action));
+
+		}
+		if (selections[2])
+		{
+			Action action = (pixelColor, mouse) ->
+			{
+				int[] rgbInfo = {pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue()};
+				int[] hsvData = extractHSV(rgbInfo);
+				return format("(%s%%, %s%%, %s%%)", hsvData);
+			};
+
+			panels.add(new ActionPanel("HSV = ", action));
+		}
+		if (selections[3])
+		{
+			Action action = (pixelColor, mouse) ->
+			{
+				int[] rgbInfo = {pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue()};
+				return format("#%02X%02X%02X", rgbInfo);
+			};
+
+			panels.add(new ActionPanel("Hex = ", action));
+		}
+
+		return panels.toArray(new ActionPanel[]{});
 	}
 
 	/**
@@ -196,5 +199,11 @@ public class PixelReader
 			dataAsObj[i] = data[i];
 
 		return String.format(format, (Object[]) dataAsObj);
+	}
+
+	//Interface used for lambda expressions
+	public interface Action
+	{
+		String performAction(Color pixelColor, Point mouse);
 	}
 }

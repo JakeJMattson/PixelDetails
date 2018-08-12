@@ -16,7 +16,7 @@ public class CopyKeyPressListener implements KeyListener, Serializable
 	 */
 	private boolean shouldCopy;
 
-	public CopyKeyPressListener()
+	CopyKeyPressListener()
 	{
 		shouldCopy = false;
 	}
@@ -35,7 +35,7 @@ public class CopyKeyPressListener implements KeyListener, Serializable
 	@Override
 	public void keyTyped(KeyEvent e) {}
 
-	public boolean wasCopyRequested()
+	boolean wasCopyRequested()
 	{
 		//Save current state
 		boolean state = shouldCopy;

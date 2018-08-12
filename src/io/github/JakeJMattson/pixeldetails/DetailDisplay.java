@@ -12,24 +12,20 @@ import javax.swing.*;
  * @author JakeJMattson
  */
 @SuppressWarnings("serial")
-public class DetailDisplay
+class DetailDisplay
 {
 	/**
 	 * Frame to contain all GUI components
 	 */
 	private JFrame frame;
 	/**
+	 * Array of panels containing actions (lambdas) to self-populate data
+	 */
+	private ActionPanel[] panels;
+	/**
 	 * Panel to display the color of the pixel that the mouse pointer is over
 	 */
 	private JPanel colorPanel;
-	/**
-	 * Array of text from static labels - used when requested during copying
-	 */
-	private final String[] staticText;
-	/**
-	 * Array of labels that will be changed as the pixel under the mouse changes
-	 */
-	private final JLabel[] dynamicLabels;
 	/**
 	 * Determines whether or not the frame has been closed
 	 */
@@ -47,14 +43,13 @@ public class DetailDisplay
 	 */
 	private final CopyKeyPressListener copyListener;
 
-	public DetailDisplay(String[] labelText, boolean[] isPanelVisible, boolean isDynamic, boolean shouldCopyLabels)
+	DetailDisplay(ActionPanel[] panels, boolean isDynamic, boolean shouldCopyLabels)
 	{
 		//Create frame
 		frame = new JFrame();
 
 		//Initialize
-		staticText = labelText;
-		dynamicLabels = new JLabel[labelText.length];
+		this.panels = panels;
 		this.isDynamic = isDynamic;
 		this.shouldCopyLabels = shouldCopyLabels;
 		copyListener = new CopyKeyPressListener();
@@ -67,7 +62,7 @@ public class DetailDisplay
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		//Create panel
-		JPanel displayPanel = createDisplayPanel(isPanelVisible);
+		JPanel displayPanel = createDisplayPanel();
 
 		if (isDynamic)
 			displayPanel.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK));
@@ -105,61 +100,20 @@ public class DetailDisplay
 	/**
 	 * Create all panels requested by the user.
 	 *
-	 * @param isPanelVisible
-	 *            Array of booleans that determine if the panel at the matching
-	 *            index should be created
 	 * @return The panel containing all info selected by the user
 	 */
-	private JPanel createDisplayPanel(boolean[] isPanelVisible)
+	private JPanel createDisplayPanel()
 	{
 		//Create panel
 		JPanel displayPanel = new JPanel(new GridLayout(0, 1));
 
-		//Create label preferences
-		Font labelFont = new Font("Monospaced", Font.BOLD, 12);
+		for (JPanel panel : panels)
+			displayPanel.add(panel);
 
-		for (int i = 0; i < staticText.length; i++)
-			if (isPanelVisible[i])
-			{
-				//Create labels
-				JLabel staticLabel = new JLabel(staticText[i]);
-				staticLabel.setFont(labelFont);
-				dynamicLabels[i] = new JLabel();
-
-				//Add labels to panel
-				JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-				panel.add(staticLabel);
-				panel.add(dynamicLabels[i]);
-
-				//Add smaller panel to display panel
-				displayPanel.add(panel);
-			}
-
-		if (isPanelVisible[staticText.length])
-		{
-			colorPanel = new JPanel();
-			displayPanel.add(colorPanel);
-		}
+		colorPanel = new JPanel();
+		displayPanel.add(colorPanel);
 
 		return displayPanel;
-	}
-
-	/**
-	 * Set all dynamic label text and resize the frame to fit it.
-	 *
-	 * @param labelText
-	 *            Array of strings to be displayed
-	 */
-	public void setDynamicLabelText(String[] labelText)
-	{
-		//Set label text
-		for (int i = 0; i < labelText.length; i++)
-			if (dynamicLabels[i] != null)
-				dynamicLabels[i].setText(labelText[i]);
-
-		//Resize frame
-		if (isDynamic)
-			frame.pack();
 	}
 
 	/**
@@ -168,7 +122,7 @@ public class DetailDisplay
 	 * @param color
 	 *            New panel color
 	 */
-	public void setPanelColor(Color color)
+	private void setPanelColor(Color color)
 	{
 		if (colorPanel != null)
 			colorPanel.setBackground(color);
@@ -180,7 +134,7 @@ public class DetailDisplay
 	 * @param framePosition
 	 *            Point to represent the new location
 	 */
-	public void setPosition(Point framePosition)
+	private void setPosition(Point framePosition)
 	{
 		if (!isDynamic)
 			return;
@@ -221,7 +175,7 @@ public class DetailDisplay
 	 *
 	 * @return Open status
 	 */
-	public boolean isOpen()
+	boolean isOpen()
 	{
 		return isOpen;
 	}
@@ -229,34 +183,40 @@ public class DetailDisplay
 	/**
 	 * Copy pixel data to the clip board if requested by the user.
 	 */
-	public void copyIfRequested()
+	void copyIfRequested()
 	{
 		if (copyListener.wasCopyRequested())
 		{
 			StringBuilder buffer = new StringBuilder();
 
 			//Get data being displays
-			for (int i = 0; i < dynamicLabels.length; i++)
+			for (ActionPanel panel : panels)
 			{
-				JLabel currentLabel = dynamicLabels[i];
+				if (shouldCopyLabels)
+					buffer.append(panel.getLabel());
 
-				if (currentLabel != null)
-				{
-					String data = currentLabel.getText();
-
-					if (!data.trim().isEmpty())
-					{
-						if (shouldCopyLabels)
-							buffer.append(staticText[i]);
-
-						buffer.append(data + System.lineSeparator());
-					}
-				}
+				buffer.append(panel.getText()).append(System.lineSeparator());
 			}
 
 			//Send data to system clip board
 			StringSelection stringSelection = new StringSelection(buffer.toString());
 			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
 		}
+	}
+
+	void updateComponents(Robot robot)
+	{
+		Point mousePosition = MouseInfo.getPointerInfo().getLocation();
+		Color pixelColor = robot.getPixelColor(mousePosition.x, mousePosition.y);
+
+		setPanelColor(pixelColor);
+		setPosition(mousePosition);
+
+		for (ActionPanel panel : panels)
+			panel.performAction(pixelColor, mousePosition);
+
+		//Resize frame
+		if (isDynamic)
+			frame.pack();
 	}
 }
