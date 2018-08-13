@@ -1,16 +1,15 @@
 package io.github.JakeJMattson.pixeldetails;
 
-		import java.awt.*;
-		import java.util.*;
-
-		import javax.swing.*;
+import java.awt.*;
+import java.util.*;
+import javax.swing.*;
 
 /**
  * Performs pixel reading and formats data into strings.
  *
  * @author JakeJMattson
  */
-public class PixelReader
+class PixelReader
 {
 	public static void main(String[] args)
 	{
@@ -29,25 +28,47 @@ public class PixelReader
 		if (robot == null)
 			return;
 
-		//Get user choices
-		boolean[][] displayChoices = displayOptions();
+		//Prepare args
+		OptionPanel info = new OptionPanel("Info to be displayed (Text)");
+		info.addCheckBox("Coordinates", "Location (X,Y) of the mouse on the screen");
+		info.addCheckBox("RGB", "Pixel color as 'Red, Green, Blue' values");
+		info.addCheckBox("HSV", "Pixel color as 'Hue, Saturation, Value' values");
+		info.addCheckBox("Hex", "Pixel color as Hexadecimal value");
+
+		OptionPanel color = new OptionPanel("Color panel");
+		color.addCheckBox("Color panel", "Pixel color on a larger display");
+
+		OptionPanel placement = new OptionPanel("Placement behavior");
+		placement.addCheckBox("Dynamic placement", "Allow the frame to \"follow\" the mouse pointer");
+
+		OptionPanel copy = new OptionPanel("Copy format");
+		copy.addCheckBox("Include labels", "Static labels will be copied along with dynamic data");
 
 		//If submit button not clicked, exit program
-		if (displayChoices == null)
+		if (!displayOptions(info, color, placement, copy))
 			return;
 
-		//Separate array
-		boolean[] infoChoices = displayChoices[0];
-		boolean isDynamic = displayChoices[1][0];
-		boolean shouldCopyLabels = displayChoices[2][0];
+		//Get user selections
+		boolean[] infoChoices = info.getSelections();
+		boolean hasColorPanel = color.getSelections()[0];
+		boolean isDynamic = placement.getSelections()[0];
+		boolean shouldCopyLabels = copy.getSelections()[0];
 
 		//Create display
 		ActionPanel[] panels = createPanels(infoChoices);
-		DetailDisplay display = new DetailDisplay(panels, isDynamic, shouldCopyLabels);
+
+		if (panels.length == 0)
+			return;
+
+		DetailDisplay display = new DetailDisplay(panels, hasColorPanel, isDynamic, shouldCopyLabels);
 
 		while (display.isOpen())
 		{
-			display.updateComponents(robot);
+			//Update info based on mouse location
+			Point mousePosition = MouseInfo.getPointerInfo().getLocation();
+			Color pixelColor = robot.getPixelColor(mousePosition.x, mousePosition.y);
+
+			display.updateComponents(mousePosition, pixelColor);
 			display.copyIfRequested();
 		}
 	}
@@ -57,85 +78,58 @@ public class PixelReader
 	 *
 	 * @return A boolean array of user selections
 	 */
-	private static boolean[][] displayOptions()
+	private boolean displayOptions(OptionPanel... options)
 	{
-		//Prepare args
-		OptionPanel info = new OptionPanel("Info to be displayed");
-		info.addCheckBox("Coordinates", "Location (X,Y) of the mouse on the screen");
-		info.addCheckBox("RGB", "Pixel color as 'Red, Green, Blue' values");
-		info.addCheckBox("HSV", "Pixel color as 'Hue, Saturation, Value' values");
-		info.addCheckBox("Hex", "Pixel color as Hexidecimal value");
-		info.addCheckBox("Color bar", "Pixel color on a larger display");
-
-		OptionPanel placement = new OptionPanel("Placement behavior");
-		placement.addCheckBox("Dynamic placement", "Allow the frame to \"follow\" the mouse pointer");
-
-		OptionPanel copy = new OptionPanel("Copy format");
-		copy.addCheckBox("Include labels", "Static labels will be copied along with dynamic data");
-
 		//Get choices from user
-		Object[] components = {info, placement, copy};
 		Object[] buttonText = {"Submit"};
-		int choice = JOptionPane.showOptionDialog(null, components, "Display options", JOptionPane.DEFAULT_OPTION,
+		int choice = JOptionPane.showOptionDialog(null, options, "Display options", JOptionPane.DEFAULT_OPTION,
 				JOptionPane.PLAIN_MESSAGE, null, buttonText, buttonText[0]);
 
-		if (choice != JOptionPane.YES_OPTION)
-			return null;
-
-		boolean[][] selections = new boolean[3][];
-		selections[0] = info.getSelections();
-		selections[1] = placement.getSelections();
-		selections[2] = copy.getSelections();
-
-		return selections;
+		return choice == JOptionPane.YES_OPTION;
 	}
 
+	/**
+	 * Create an array of panels that will self-populate when updated with mouse information.
+	 *
+	 * @param selections Panels to be created (selected by user)
+	 * @return Array of created panels
+	 */
 	private ActionPanel[] createPanels(boolean[] selections)
 	{
 		ArrayList<ActionPanel> panels = new ArrayList<>();
 
+		//Mouse Coordinates
 		if (selections[0])
-		{
-			Action action = (pixelColor, mouse) ->
+			panels.add(new ActionPanel("X,Y = ", (mouse, pixelColor) ->
 			{
 				int[] coordinates = {mouse.x, mouse.y};
 				return format("(%s, %s)", coordinates);
-			};
+			}));
 
-			panels.add(new ActionPanel("X,Y = ", action));
-		}
+		//RGB values
 		if (selections[1])
-		{
-			Action action = (pixelColor, mouse) ->
+			panels.add(new ActionPanel("RGB = ", (mouse, pixelColor) ->
 			{
 				int[] rgbInfo = {pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue()};
 				return format("(%s, %s, %s)", rgbInfo);
-			};
+			}));
 
-			panels.add(new ActionPanel("RGB = ", action));
-
-		}
+		//HSV values
 		if (selections[2])
-		{
-			Action action = (pixelColor, mouse) ->
+			panels.add(new ActionPanel("HSV = ", (mouse, pixelColor) ->
 			{
 				int[] rgbInfo = {pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue()};
 				int[] hsvData = extractHSV(rgbInfo);
 				return format("(%s%%, %s%%, %s%%)", hsvData);
-			};
+			}));
 
-			panels.add(new ActionPanel("HSV = ", action));
-		}
+		//Hex value
 		if (selections[3])
-		{
-			Action action = (pixelColor, mouse) ->
+			panels.add(new ActionPanel("Hex = ", (mouse, pixelColor) ->
 			{
 				int[] rgbInfo = {pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue()};
 				return format("#%02X%02X%02X", rgbInfo);
-			};
-
-			panels.add(new ActionPanel("Hex = ", action));
-		}
+			}));
 
 		return panels.toArray(new ActionPanel[]{});
 	}
@@ -192,18 +186,20 @@ public class PixelReader
 	 */
 	private String format(String format, int[] data)
 	{
-		//Convert primitive ints to Integers to prepare for cast to Object array
-		Integer[] dataAsObj = new Integer[data.length];
+		Object[] dataAsObj = new Integer[data.length];
 
+		//Autobox ints to Integers
 		for (int i = 0; i < data.length; i++)
 			dataAsObj[i] = data[i];
 
-		return String.format(format, (Object[]) dataAsObj);
+		return String.format(format, dataAsObj);
 	}
 
-	//Interface used for lambda expressions
+	/**
+	 * Interface for lambda expressions
+	 */
 	public interface Action
 	{
-		String performAction(Color pixelColor, Point mouse);
+		String performAction(Point mouse, Color pixelColor);
 	}
 }

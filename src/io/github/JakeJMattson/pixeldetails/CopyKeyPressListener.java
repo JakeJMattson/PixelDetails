@@ -4,12 +4,12 @@ import java.awt.event.*;
 import java.io.Serializable;
 
 /**
- * KeyListner to detect a keyboard copy request.
+ * KeyListener to detect a keyboard copy request.
  *
  * @author JakeJMattson
  */
 @SuppressWarnings("serial")
-public class CopyKeyPressListener implements KeyListener, Serializable
+class CopyKeyPressListener implements KeyListener, Serializable
 {
 	/**
 	 * Whether of not the user requested to copy the data

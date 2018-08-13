@@ -5,15 +5,15 @@ import java.awt.*;
 
 class ActionPanel extends JPanel
 {
-	private String label;
+	private final String staticLabelText;
 	private JLabel dynamicLabel;
-	private PixelReader.Action action;
+	private final PixelReader.Action action;
 
-	ActionPanel(String label, PixelReader.Action action)
+	ActionPanel(String staticLabelText, PixelReader.Action action)
 	{
 		super(new FlowLayout(FlowLayout.LEFT));
 
-		this.label = label;
+		this.staticLabelText = staticLabelText;
 		this.action = action;
 
 		createPanel();
@@ -22,7 +22,7 @@ class ActionPanel extends JPanel
 	private void createPanel()
 	{
 		//Create labels
-		JLabel staticLabel = new JLabel(label);
+		JLabel staticLabel = new JLabel(staticLabelText);
 		staticLabel.setFont(new Font("Monospaced", Font.BOLD, 12));
 		dynamicLabel = new JLabel();
 
@@ -30,18 +30,15 @@ class ActionPanel extends JPanel
 		this.add(dynamicLabel);
 	}
 
-	String getLabel()
+	String getStaticLabelText()
 	{
-		return label;
+		return staticLabelText;
 	}
 
-	String getText()
-	{
-		return dynamicLabel.getText();
-	}
+	String getText() { return dynamicLabel.getText(); }
 
-	void performAction(Color pixelColor, Point mouse)
+	void performAction(Point mousePosition, Color pixelColor)
 	{
-		dynamicLabel.setText(action.performAction(pixelColor, mouse));
+		dynamicLabel.setText(action.performAction(mousePosition, pixelColor));
 	}
 }

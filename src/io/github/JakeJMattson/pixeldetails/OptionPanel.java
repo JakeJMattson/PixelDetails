@@ -37,7 +37,8 @@ class OptionPanel extends JPanel
 		boolean[] selections = new boolean[checkBoxes.length];
 
 		for (int i = 0; i < checkBoxes.length; i++)
-			selections[i] = ((JCheckBox) checkBoxes[i]).isSelected();
+			if (checkBoxes[i] instanceof JCheckBox)
+				selections[i] = ((JCheckBox) checkBoxes[i]).isSelected();
 
 		return selections;
 	}

@@ -17,11 +17,11 @@ class DetailDisplay
 	/**
 	 * Frame to contain all GUI components
 	 */
-	private JFrame frame;
+	private final JFrame frame;
 	/**
 	 * Array of panels containing actions (lambdas) to self-populate data
 	 */
-	private ActionPanel[] panels;
+	private final ActionPanel[] panels;
 	/**
 	 * Panel to display the color of the pixel that the mouse pointer is over
 	 */
@@ -30,6 +30,10 @@ class DetailDisplay
 	 * Determines whether or not the frame has been closed
 	 */
 	private boolean isOpen = true;
+	/**
+	 * Determines whether or not the panel showing the color is visible
+	 */
+	private final boolean hasColorPanel;
 	/**
 	 * Determines whether or not to move the frame as the mouse moves
 	 */
@@ -43,13 +47,14 @@ class DetailDisplay
 	 */
 	private final CopyKeyPressListener copyListener;
 
-	DetailDisplay(ActionPanel[] panels, boolean isDynamic, boolean shouldCopyLabels)
+	DetailDisplay(ActionPanel[] panels, boolean hasColorPanel, boolean isDynamic, boolean shouldCopyLabels)
 	{
 		//Create frame
 		frame = new JFrame();
 
 		//Initialize
 		this.panels = panels;
+		this.hasColorPanel = hasColorPanel;
 		this.isDynamic = isDynamic;
 		this.shouldCopyLabels = shouldCopyLabels;
 		copyListener = new CopyKeyPressListener();
@@ -98,7 +103,7 @@ class DetailDisplay
 	}
 
 	/**
-	 * Create all panels requested by the user.
+	 * Build a display panel composed of all panels requested by the user.
 	 *
 	 * @return The panel containing all info selected by the user
 	 */
@@ -110,22 +115,13 @@ class DetailDisplay
 		for (JPanel panel : panels)
 			displayPanel.add(panel);
 
-		colorPanel = new JPanel();
-		displayPanel.add(colorPanel);
+		if (hasColorPanel)
+		{
+			colorPanel = new JPanel();
+			displayPanel.add(colorPanel);
+		}
 
 		return displayPanel;
-	}
-
-	/**
-	 * Set the background color of the color panel.
-	 *
-	 * @param color
-	 *            New panel color
-	 */
-	private void setPanelColor(Color color)
-	{
-		if (colorPanel != null)
-			colorPanel.setBackground(color);
 	}
 
 	/**
@@ -136,9 +132,6 @@ class DetailDisplay
 	 */
 	private void setPosition(Point framePosition)
 	{
-		if (!isDynamic)
-			return;
-
 		//Get screen info
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double screenWidth = screenSize.getWidth();
@@ -193,7 +186,7 @@ class DetailDisplay
 			for (ActionPanel panel : panels)
 			{
 				if (shouldCopyLabels)
-					buffer.append(panel.getLabel());
+					buffer.append(panel.getStaticLabelText());
 
 				buffer.append(panel.getText()).append(System.lineSeparator());
 			}
@@ -204,16 +197,25 @@ class DetailDisplay
 		}
 	}
 
-	void updateComponents(Robot robot)
+	/**
+	 * Update all components with current mouse and color information.
+	 *
+	 * @param mousePosition Current position of the mouse
+	 * @param pixelColor Current color under the mouse pointer
+	 */
+	void updateComponents(Point mousePosition, Color pixelColor)
 	{
-		Point mousePosition = MouseInfo.getPointerInfo().getLocation();
-		Color pixelColor = robot.getPixelColor(mousePosition.x, mousePosition.y);
-
-		setPanelColor(pixelColor);
-		setPosition(mousePosition);
-
+		//Update panel text
 		for (ActionPanel panel : panels)
-			panel.performAction(pixelColor, mousePosition);
+			panel.performAction(mousePosition, pixelColor);
+
+		//Update panel color
+		if (hasColorPanel)
+			colorPanel.setBackground(pixelColor);
+
+		//Move frame to mouse position
+		if (isDynamic)
+			setPosition(mousePosition);
 
 		//Resize frame
 		if (isDynamic)
