@@ -1,4 +1,4 @@
-package io.github.JakeJMattson.pixeldetails;
+package io.github.jakejmattson.pixeldetails;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;

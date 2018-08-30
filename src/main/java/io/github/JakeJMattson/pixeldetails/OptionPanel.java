@@ -1,4 +1,4 @@
-package io.github.JakeJMattson.pixeldetails;
+package io.github.jakejmattson.pixeldetails;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
