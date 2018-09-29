@@ -30,7 +30,6 @@ import java.io.Serializable;
  *
  * @author JakeJMattson
  */
-@SuppressWarnings("serial")
 class CopyKeyPressListener implements KeyListener, Serializable
 {
 	/**
@@ -52,10 +51,16 @@ class CopyKeyPressListener implements KeyListener, Serializable
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e) {}
+	public void keyReleased(KeyEvent e)
+	{
+		//Unused
+	}
 
 	@Override
-	public void keyTyped(KeyEvent e) {}
+	public void keyTyped(KeyEvent e)
+	{
+		//Unused
+	}
 
 	boolean wasCopyRequested()
 	{

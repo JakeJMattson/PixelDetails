@@ -57,7 +57,10 @@ class ActionPanel extends JPanel
 		return staticLabelText;
 	}
 
-	String getText() { return dynamicLabel.getText(); }
+	String getText()
+	{
+		return dynamicLabel.getText();
+	}
 
 	void performAction(Point mousePosition, Color pixelColor)
 	{

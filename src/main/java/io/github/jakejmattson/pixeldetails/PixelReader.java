@@ -35,14 +35,13 @@ class PixelReader
 {
 	public static void main(String[] args)
 	{
-		PixelReader driver = new PixelReader();
-		driver.setup();
+		setup();
 	}
 
 	/**
 	 * Create all necessary components and start the program.
 	 */
-	private void setup()
+	private static void setup()
 	{
 		//Create robot to get pixel color
 		Robot robot = createRobot();
@@ -70,17 +69,16 @@ class PixelReader
 		if (!displayOptions(info, color, placement, copy))
 			return;
 
-		//Get user selections
-		boolean[] infoChoices = info.getSelections();
-		boolean hasColorPanel = color.getSelections()[0];
-		boolean isDynamic = placement.getSelections()[0];
-		boolean shouldCopyLabels = copy.getSelections()[0];
-
 		//Create display
-		ActionPanel[] panels = createPanels(infoChoices);
+		ActionPanel[] panels = createPanels(info.getSelections());
 
 		if (panels.length == 0)
 			return;
+
+		//Get user selections
+		boolean hasColorPanel = color.getSelections()[0];
+		boolean isDynamic = placement.getSelections()[0];
+		boolean shouldCopyLabels = copy.getSelections()[0];
 
 		DetailDisplay display = new DetailDisplay(panels, hasColorPanel, isDynamic, shouldCopyLabels);
 
@@ -100,7 +98,7 @@ class PixelReader
 	 *
 	 * @return A boolean array of user selections
 	 */
-	private boolean displayOptions(OptionPanel... options)
+	private static boolean displayOptions(OptionPanel... options)
 	{
 		//Get choices from user
 		Object[] buttonText = {"Submit"};
@@ -116,13 +114,13 @@ class PixelReader
 	 * @param selections Panels to be created (selected by user)
 	 * @return Array of created panels
 	 */
-	private ActionPanel[] createPanels(boolean[] selections)
+	private static ActionPanel[] createPanels(boolean[] selections)
 	{
 		ArrayList<ActionPanel> panels = new ArrayList<>();
 
 		//Mouse Coordinates
 		if (selections[0])
-			panels.add(new ActionPanel("X,Y = ", (mouse, pixelColor) ->
+			panels.add(new ActionPanel("X,Y = ", (Point mouse, Color pixelColor) ->
 			{
 				int[] coordinates = {mouse.x, mouse.y};
 				return format("(%s, %s)", coordinates);
@@ -130,7 +128,7 @@ class PixelReader
 
 		//RGB values
 		if (selections[1])
-			panels.add(new ActionPanel("RGB = ", (mouse, pixelColor) ->
+			panels.add(new ActionPanel("RGB = ", (Point mouse, Color pixelColor) ->
 			{
 				int[] rgbInfo = {pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue()};
 				return format("(%s, %s, %s)", rgbInfo);
@@ -138,7 +136,7 @@ class PixelReader
 
 		//HSV values
 		if (selections[2])
-			panels.add(new ActionPanel("HSV = ", (mouse, pixelColor) ->
+			panels.add(new ActionPanel("HSV = ", (Point mouse, Color pixelColor) ->
 			{
 				int[] rgbInfo = {pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue()};
 				int[] hsvData = extractHSV(rgbInfo);
@@ -147,7 +145,7 @@ class PixelReader
 
 		//Hex value
 		if (selections[3])
-			panels.add(new ActionPanel("Hex = ", (mouse, pixelColor) ->
+			panels.add(new ActionPanel("Hex = ", (Point mouse, Color pixelColor) ->
 			{
 				int[] rgbInfo = {pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue()};
 				return format("#%02X%02X%02X", rgbInfo);
@@ -161,7 +159,7 @@ class PixelReader
 	 *
 	 * @return Robot
 	 */
-	private Robot createRobot()
+	private static Robot createRobot()
 	{
 		try
 		{
@@ -183,7 +181,7 @@ class PixelReader
 	 *            An array of RGB values
 	 * @return An array of HSV values
 	 */
-	private int[] extractHSV(int[] rgb)
+	private static int[] extractHSV(int[] rgb)
 	{
 		//Convert RGB to HSV
 		int[] hsv = new int[rgb.length];
@@ -206,7 +204,7 @@ class PixelReader
 	 *            The int array to be formatted
 	 * @return The formatted string
 	 */
-	private String format(String format, int[] data)
+	private static String format(String format, int[] data)
 	{
 		Object[] dataAsObj = new Integer[data.length];
 
@@ -220,6 +218,7 @@ class PixelReader
 	/**
 	 * Interface for lambda expressions
 	 */
+	@FunctionalInterface
 	public interface Action
 	{
 		String performAction(Point mouse, Color pixelColor);

@@ -33,7 +33,6 @@ import javax.swing.*;
  *
  * @author JakeJMattson
  */
-@SuppressWarnings("serial")
 class DetailDisplay
 {
 	/**
@@ -75,7 +74,7 @@ class DetailDisplay
 		frame = new JFrame();
 
 		//Initialize
-		this.panels = panels;
+		this.panels = panels.clone();
 		this.hasColorPanel = hasColorPanel;
 		this.isDynamic = isDynamic;
 		this.shouldCopyLabels = shouldCopyLabels;
@@ -169,18 +168,18 @@ class DetailDisplay
 		int lowerBound = (int) (framePosition.getY() + frameHeight);
 
 		//Distance between display and mouse
-		int buffer = 10;
+		final int BUFFER = 10;
 
 		//Determine direction
 		if (rightBound >= screenWidth)
-			framePosition.x -= frameWidth + buffer;
+			framePosition.x -= frameWidth + BUFFER;
 		else
-			framePosition.x += buffer;
+			framePosition.x += BUFFER;
 
 		if (lowerBound >= screenHeight)
-			framePosition.y -= frameHeight + buffer;
+			framePosition.y -= frameHeight + BUFFER;
 		else
-			framePosition.y += buffer;
+			framePosition.y += BUFFER;
 
 		frame.setLocation(framePosition);
 	}

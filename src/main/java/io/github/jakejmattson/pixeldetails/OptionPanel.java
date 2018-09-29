@@ -34,8 +34,8 @@ class OptionPanel extends JPanel
 		super();
 
 		//Set look and feel
-		this.setLayout(new GridLayout(0, 1));
-		this.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), title,
+		super.setLayout(new GridLayout(0, 1));
+		super.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), title,
 				TitledBorder.LEFT, TitledBorder.TOP));
 	}
 
@@ -59,8 +59,7 @@ class OptionPanel extends JPanel
 		boolean[] selections = new boolean[checkBoxes.length];
 
 		for (int i = 0; i < checkBoxes.length; i++)
-			if (checkBoxes[i] instanceof JCheckBox)
-				selections[i] = ((JCheckBox) checkBoxes[i]).isSelected();
+			selections[i] = ((JCheckBox) checkBoxes[i]).isSelected();
 
 		return selections;
 	}
