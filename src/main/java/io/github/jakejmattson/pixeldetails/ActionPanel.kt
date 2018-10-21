@@ -20,50 +20,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.jakejmattson.pixeldetails;
+package io.github.jakejmattson.pixeldetails
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.*
+import java.awt.*
 
-class ActionPanel extends JPanel
-{
-	private final String staticLabelText;
-	private JLabel dynamicLabel;
-	private final PixelReader.Action action;
+internal class ActionPanel(val staticLabelText: String, private val action: PixelReader.Action):
+		JPanel(FlowLayout(FlowLayout.LEFT)) {
+	private var dynamicLabel: JLabel? = null
 
-	ActionPanel(String staticLabelText, PixelReader.Action action)
-	{
-		super(new FlowLayout(FlowLayout.LEFT));
+	val text: String
+		get() = dynamicLabel!!.text
 
-		this.staticLabelText = staticLabelText;
-		this.action = action;
+	init {
+		val staticLabel = JLabel(staticLabelText)
+		staticLabel.font = Font("Monospaced", Font.BOLD, 12)
+		dynamicLabel = JLabel()
 
-		createPanel();
+		this.add(staticLabel)
+		this.add(dynamicLabel)
 	}
 
-	private void createPanel()
-	{
-		//Create labels
-		JLabel staticLabel = new JLabel(staticLabelText);
-		staticLabel.setFont(new Font("Monospaced", Font.BOLD, 12));
-		dynamicLabel = new JLabel();
-
-		this.add(staticLabel);
-		this.add(dynamicLabel);
-	}
-
-	String getStaticLabelText()
-	{
-		return staticLabelText;
-	}
-
-	String getText()
-	{
-		return dynamicLabel.getText();
-	}
-
-	void performAction(Point mousePosition, Color pixelColor)
-	{
-		dynamicLabel.setText(action.performAction(mousePosition, pixelColor));
+	fun performAction(mousePosition: Point, pixelColor: Color) {
+		dynamicLabel!!.text = action.performAction(mousePosition, pixelColor)
 	}
 }

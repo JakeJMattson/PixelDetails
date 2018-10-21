@@ -20,56 +20,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.jakejmattson.pixeldetails;
+package io.github.jakejmattson.pixeldetails
 
-import java.awt.event.*;
-import java.io.Serializable;
+import java.awt.event.*
+import java.io.Serializable
 
 /**
  * KeyListener to detect a keyboard copy request.
  *
  * @author JakeJMattson
  */
-class CopyKeyPressListener implements KeyListener, Serializable
-{
+internal class CopyKeyPressListener: KeyListener, Serializable {
 	/**
 	 * Whether of not the user requested to copy the data
 	 */
-	private boolean shouldCopy;
+	private var shouldCopy: Boolean = false
 
-	CopyKeyPressListener()
-	{
-		shouldCopy = false;
-	}
-
-	@Override
-	public synchronized void keyPressed(KeyEvent e)
-	{
+	@Synchronized override fun keyPressed(e: KeyEvent) {
 		//Copy command (Ctrl + C) being pressed
-		if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_C)
-			shouldCopy = true;
+		if (e.isControlDown && e.keyCode == KeyEvent.VK_C)
+			shouldCopy = true
 	}
 
-	@Override
-	public void keyReleased(KeyEvent e)
-	{
-		//Unused
-	}
+	override fun keyReleased(e: KeyEvent) {}
+	override fun keyTyped(e: KeyEvent) {}
 
-	@Override
-	public void keyTyped(KeyEvent e)
-	{
-		//Unused
-	}
-
-	boolean wasCopyRequested()
-	{
+	fun wasCopyRequested(): Boolean {
 		//Save current state
-		boolean state = shouldCopy;
+		val state = shouldCopy
 
 		//Reset state
-		shouldCopy = false;
+		shouldCopy = false
 
-		return state;
+		return state
 	}
 }
