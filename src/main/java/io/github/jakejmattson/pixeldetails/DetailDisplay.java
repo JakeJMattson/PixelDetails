@@ -70,39 +70,29 @@ class DetailDisplay
 
 	DetailDisplay(ActionPanel[] panels, boolean hasColorPanel, boolean isDynamic, boolean shouldCopyLabels)
 	{
-		//Create frame
-		frame = new JFrame();
-
-		//Initialize
+		this.frame = new JFrame();
 		this.panels = panels.clone();
 		this.hasColorPanel = hasColorPanel;
 		this.isDynamic = isDynamic;
 		this.shouldCopyLabels = shouldCopyLabels;
-		copyListener = new CopyKeyPressListener();
+		this.copyListener = new CopyKeyPressListener();
 
-		//Set frame preferences
-		frame.setAlwaysOnTop(true);
-		frame.setUndecorated(isDynamic);
-		frame.addKeyListener(copyListener);
-		frame.addWindowListener(createWindowListener());
-		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-		//Create panel
 		JPanel displayPanel = createDisplayPanel();
 
 		if (isDynamic)
 			displayPanel.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK));
 
-		//Add panel to frame
+		frame.setAlwaysOnTop(true);
+		frame.setUndecorated(isDynamic);
+		frame.addKeyListener(copyListener);
+		frame.addWindowListener(createWindowListener());
+		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		frame.add(displayPanel);
-
-		//Resize frame
 		frame.pack();
 
 		if (!isDynamic)
 			frame.setSize((int) (frame.getWidth() * 1.4), frame.getHeight());
 
-		//Show frame
 		frame.setVisible(true);
 	}
 
@@ -130,7 +120,6 @@ class DetailDisplay
 	 */
 	private JPanel createDisplayPanel()
 	{
-		//Create panel
 		JPanel displayPanel = new JPanel(new GridLayout(0, 1));
 
 		for (JPanel panel : panels)
@@ -153,24 +142,19 @@ class DetailDisplay
 	 */
 	private void setPosition(Point framePosition)
 	{
-		//Get screen info
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double screenWidth = screenSize.getWidth();
 		double screenHeight = screenSize.getHeight();
 
-		//Get frame info
 		Rectangle frameBounds = frame.getBounds();
 		int frameHeight = frameBounds.height;
 		int frameWidth = frameBounds.width;
 
-		//Calculate frame bounds
 		int rightBound = (int) (framePosition.getX() + frameWidth);
 		int lowerBound = (int) (framePosition.getY() + frameHeight);
 
-		//Distance between display and mouse
 		final int BUFFER = 10;
 
-		//Determine direction
 		if (rightBound >= screenWidth)
 			framePosition.x -= frameWidth + BUFFER;
 		else
@@ -203,7 +187,6 @@ class DetailDisplay
 		{
 			StringBuilder buffer = new StringBuilder();
 
-			//Get data being displays
 			for (ActionPanel panel : panels)
 			{
 				if (shouldCopyLabels)
@@ -212,7 +195,6 @@ class DetailDisplay
 				buffer.append(panel.getText()).append(System.lineSeparator());
 			}
 
-			//Send data to system clip board
 			StringSelection stringSelection = new StringSelection(buffer.toString());
 			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
 		}
@@ -226,20 +208,16 @@ class DetailDisplay
 	 */
 	void updateComponents(Point mousePosition, Color pixelColor)
 	{
-		//Update panel text
 		for (ActionPanel panel : panels)
 			panel.performAction(mousePosition, pixelColor);
 
-		//Update panel color
 		if (hasColorPanel)
 			colorPanel.setBackground(pixelColor);
 
-		//Move frame to mouse position
 		if (isDynamic)
+		{
 			setPosition(mousePosition);
-
-		//Resize frame
-		if (isDynamic)
 			frame.pack();
+		}
 	}
 }

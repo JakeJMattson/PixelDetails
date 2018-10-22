@@ -43,13 +43,11 @@ class PixelReader
 	 */
 	private static void setup()
 	{
-		//Create robot to get pixel color
 		Robot robot = createRobot();
 
 		if (robot == null)
 			return;
 
-		//Prepare args
 		OptionPanel info = new OptionPanel("Info to be displayed (Text)");
 		info.addCheckBox("Coordinates", "Location (X,Y) of the mouse on the screen");
 		info.addCheckBox("RGB", "Pixel color as 'Red, Green, Blue' values");
@@ -69,13 +67,11 @@ class PixelReader
 		if (!displayOptions(info, color, placement, copy))
 			return;
 
-		//Create display
 		ActionPanel[] panels = createPanels(info.getSelections());
 
 		if (panels.length == 0)
 			return;
 
-		//Get user selections
 		boolean hasColorPanel = color.getSelections()[0];
 		boolean isDynamic = placement.getSelections()[0];
 		boolean shouldCopyLabels = copy.getSelections()[0];
@@ -84,7 +80,6 @@ class PixelReader
 
 		while (display.isOpen())
 		{
-			//Update info based on mouse location
 			Point mousePosition = MouseInfo.getPointerInfo().getLocation();
 			Color pixelColor = robot.getPixelColor(mousePosition.x, mousePosition.y);
 
@@ -100,7 +95,6 @@ class PixelReader
 	 */
 	private static boolean displayOptions(OptionPanel... options)
 	{
-		//Get choices from user
 		Object[] buttonText = {"Submit"};
 		int choice = JOptionPane.showOptionDialog(null, options, "Display options", JOptionPane.DEFAULT_OPTION,
 				JOptionPane.PLAIN_MESSAGE, null, buttonText, buttonText[0]);
@@ -183,12 +177,10 @@ class PixelReader
 	 */
 	private static int[] extractHSV(int[] rgb)
 	{
-		//Convert RGB to HSV
 		int[] hsv = new int[rgb.length];
 		float[] hsb = new float[rgb.length];
 		Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], hsb);
 
-		//Convert to percentages
 		for (int i = 0; i < hsv.length; i++)
 			hsv[i] = Math.round(hsb[i] * 100);
 

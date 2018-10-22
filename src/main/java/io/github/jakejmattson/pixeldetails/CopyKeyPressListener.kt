@@ -46,10 +46,7 @@ internal class CopyKeyPressListener: KeyListener, Serializable {
 	override fun keyTyped(e: KeyEvent) {}
 
 	fun wasCopyRequested(): Boolean {
-		//Save current state
 		val state = shouldCopy
-
-		//Reset state
 		shouldCopy = false
 
 		return state
