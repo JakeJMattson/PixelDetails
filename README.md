@@ -2,6 +2,9 @@
   <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">
     <img src="https://img.shields.io/badge/Java-8-blue.svg" alt="Java 8">
   </a>
+  <a href="https://kotlinlang.org/">
+    <img src="https://img.shields.io/badge/Kotlin-1.3.0-blue.svg" alt="Kotlin 1.3.0">
+  </a>
   <a href="LICENSE.md">
     <img src="https://img.shields.io/github/license/JakeJMattson/PixelDetails.svg" alt="license">
   </a>
@@ -14,14 +17,13 @@
 This project allows you to see the details of a pixel at the current location of the mouse pointer. The current build provides mouse pointer coordinates, RGB values, HSV values, Hex values, and a panel for you to view the pixel color in a larger area.
 </p>
 
-
-
 <img src="https://user-images.githubusercontent.com/22604455/43696005-92264226-9901-11e8-849a-68ec2249882a.PNG" width="100%"/>
 
 ## Prerequisites
 
 ### Languages
 * [Java](https://go.java/index.html?intcmp=gojava-banner-java-com)
+* [Kotlin](https://kotlinlang.org/)
 
 ### Libraries
 * No additional libraries
