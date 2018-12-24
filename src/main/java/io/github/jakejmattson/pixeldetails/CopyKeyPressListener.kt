@@ -25,15 +25,7 @@ package io.github.jakejmattson.pixeldetails
 import java.awt.event.*
 import java.io.Serializable
 
-/**
- * KeyListener to detect a keyboard copy request.
- *
- * @author JakeJMattson
- */
 internal class CopyKeyPressListener: KeyListener, Serializable {
-	/**
-	 * Whether of not the user requested to copy the data
-	 */
 	private var shouldCopy: Boolean = false
 
 	@Synchronized override fun keyPressed(e: KeyEvent) {

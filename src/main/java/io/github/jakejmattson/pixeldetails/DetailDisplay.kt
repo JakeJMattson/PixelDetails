@@ -27,49 +27,16 @@ import java.awt.event.*
 
 import javax.swing.*
 
-/**
- * Displays the pixel information to users.
- *
- * @author JakeJMattson
- */
 internal class DetailDisplay(panels: Array<ActionPanel>,
-	/**
-	 * Determines whether or not the panel showing the color is visible
-	 */
-	private val hasColorPanel: Boolean,
-	/**
-	 * Determines whether or not to move the frame as the mouse moves
-	 */
-	private val isDynamic: Boolean,
-	/**
-	 * Determines whether or not to include static label text when copying
-	 */
-	private val shouldCopyLabels: Boolean) {
-	/**
-	 * Frame to contain all GUI components
-	 */
+							 private val hasColorPanel: Boolean,
+							 private val isDynamic: Boolean,
+							 private val shouldCopyLabels: Boolean) {
+
 	private val frame: JFrame
-	/**
-	 * Array of panels containing actions (lambdas) to self-populate data
-	 */
 	private val panels: Array<ActionPanel>
-	/**
-	 * Panel to display the color of the pixel that the mouse pointer is over
-	 */
 	private var colorPanel: JPanel? = null
-	/**
-	 * Determines whether or not the frame has been closed
-	 */
-	/**
-	 * Externally called to see if display frame is still open.
-	 *
-	 * @return Open status
-	 */
 	var isOpen = true
 		private set
-	/**
-	 * Listens for a request to copy the pixel information to the clip board
-	 */
 	private val copyListener: CopyKeyPressListener
 
 	init {
@@ -96,11 +63,6 @@ internal class DetailDisplay(panels: Array<ActionPanel>,
 		frame.isVisible = true
 	}
 
-	/**
-	 * Create a listener to monitor the frame closing event.
-	 *
-	 * @return WindowListener
-	 */
 	private fun createWindowListener(): WindowListener {
 		return object: WindowAdapter() {
 			override fun windowClosing(windowClosed: WindowEvent?) {
@@ -109,11 +71,6 @@ internal class DetailDisplay(panels: Array<ActionPanel>,
 		}
 	}
 
-	/**
-	 * Build a display panel composed of all panels requested by the user.
-	 *
-	 * @return The panel containing all info selected by the user
-	 */
 	private fun createDisplayPanel(): JPanel {
 		val displayPanel = JPanel(GridLayout(0, 1))
 
@@ -128,12 +85,6 @@ internal class DetailDisplay(panels: Array<ActionPanel>,
 		return displayPanel
 	}
 
-	/**
-	 * Set the position of the frame if dynamic placement was selected.
-	 *
-	 * @param framePosition
-	 * Point to represent the new location
-	 */
 	private fun setPosition(framePosition: Point) {
 		val screenSize = Toolkit.getDefaultToolkit().screenSize
 		val screenWidth = screenSize.getWidth()
@@ -161,9 +112,6 @@ internal class DetailDisplay(panels: Array<ActionPanel>,
 		frame.location = framePosition
 	}
 
-	/**
-	 * Copy pixel data to the clip board if requested by the user.
-	 */
 	fun copyIfRequested() {
 		if (copyListener.wasCopyRequested()) {
 			val buffer = StringBuilder()
@@ -180,12 +128,6 @@ internal class DetailDisplay(panels: Array<ActionPanel>,
 		}
 	}
 
-	/**
-	 * Update all components with current mouse and color information.
-	 *
-	 * @param mousePosition Current position of the mouse
-	 * @param pixelColor Current color under the mouse pointer
-	 */
 	fun updateComponents(mousePosition: Point, pixelColor: Color) {
 		for (panel in panels)
 			panel.performAction(mousePosition, pixelColor)
