@@ -20,38 +20,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.github.jakejmattson.pixeldetails;
+package io.github.jakejmattson.pixeldetails
 
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
-import java.awt.*;
+import javax.swing.*
+import javax.swing.border.TitledBorder
+import java.awt.*
 
-class OptionPanel extends JPanel
-{
-	OptionPanel(String title)
-	{
-		super(new GridLayout(0, 1));
+internal class OptionPanel(title: String): JPanel(GridLayout(0, 1)) {
+
+	val selections: BooleanArray
+		get() {
+			val checkBoxes = this.components
+			val selections = BooleanArray(checkBoxes.size)
+
+			for (i in checkBoxes.indices)
+				selections[i] = (checkBoxes[i] as JCheckBox).isSelected
+
+			return selections
+		}
+
+	init {
 		super.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), title,
-				TitledBorder.LEFT, TitledBorder.TOP));
+			TitledBorder.LEFT, TitledBorder.TOP))
 	}
 
-	void addCheckBox(String boxText, String tooltip)
-	{
-		JCheckBox box = new JCheckBox(boxText);
-		box.setSelected(true);
-		box.setToolTipText(tooltip);
+	fun addCheckBox(boxText: String, tooltip: String) {
+		val box = JCheckBox(boxText)
+		box.isSelected = true
+		box.toolTipText = tooltip
 
-		this.add(box);
-	}
-
-	boolean[] getSelections()
-	{
-		Component[] checkBoxes = this.getComponents();
-		boolean[] selections = new boolean[checkBoxes.length];
-
-		for (int i = 0; i < checkBoxes.length; i++)
-			selections[i] = ((JCheckBox) checkBoxes[i]).isSelected();
-
-		return selections;
+		this.add(box)
 	}
 }
