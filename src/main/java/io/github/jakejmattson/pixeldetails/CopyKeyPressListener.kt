@@ -23,13 +23,11 @@
 package io.github.jakejmattson.pixeldetails
 
 import java.awt.event.*
-import java.io.Serializable
 
-internal class CopyKeyPressListener: KeyListener, Serializable {
+internal class CopyKeyPressListener: KeyListener {
 	private var shouldCopy: Boolean = false
 
 	@Synchronized override fun keyPressed(e: KeyEvent) {
-		//Copy command (Ctrl + C) being pressed
 		if (e.isControlDown && e.keyCode == KeyEvent.VK_C)
 			shouldCopy = true
 	}
@@ -40,7 +38,6 @@ internal class CopyKeyPressListener: KeyListener, Serializable {
 	fun wasCopyRequested(): Boolean {
 		val state = shouldCopy
 		shouldCopy = false
-
 		return state
 	}
 }

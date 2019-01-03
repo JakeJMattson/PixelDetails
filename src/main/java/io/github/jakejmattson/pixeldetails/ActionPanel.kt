@@ -27,21 +27,18 @@ import java.awt.*
 
 internal class ActionPanel(val staticLabelText: String, private val action: PixelReader.Action):
 		JPanel(FlowLayout(FlowLayout.LEFT)) {
-	private var dynamicLabel: JLabel? = null
+
+	private var dynamicLabel: JLabel = JLabel()
 
 	val text: String
-		get() = dynamicLabel!!.text
+		get() = dynamicLabel.text
 
 	init {
-		val staticLabel = JLabel(staticLabelText)
-		staticLabel.font = Font("Monospaced", Font.BOLD, 12)
-		dynamicLabel = JLabel()
-
-		this.add(staticLabel)
+		this.add(JLabel(staticLabelText).apply { font = Font("Monospaced", Font.BOLD, 12) })
 		this.add(dynamicLabel)
 	}
 
 	fun performAction(mousePosition: Point, pixelColor: Color) {
-		dynamicLabel!!.text = action.performAction(mousePosition, pixelColor)
+		dynamicLabel.text = action.performAction(mousePosition, pixelColor)
 	}
 }

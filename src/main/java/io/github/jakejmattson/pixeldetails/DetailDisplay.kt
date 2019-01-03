@@ -32,35 +32,25 @@ internal class DetailDisplay(panels: Array<ActionPanel>,
 							 private val isDynamic: Boolean,
 							 private val shouldCopyLabels: Boolean) {
 
-	private val frame: JFrame
-	private val panels: Array<ActionPanel>
+	private val frame: JFrame = JFrame()
+	private val panels: Array<ActionPanel> = panels.clone()
 	private var colorPanel: JPanel? = null
+	private val copyListener: CopyKeyPressListener = CopyKeyPressListener()
 	var isOpen = true
 		private set
-	private val copyListener: CopyKeyPressListener
 
 	init {
-		this.frame = JFrame()
-		this.panels = panels.clone()
-		this.copyListener = CopyKeyPressListener()
-
-		val displayPanel = createDisplayPanel()
-
-		if (isDynamic)
-			displayPanel.border = BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK)
-
 		frame.isAlwaysOnTop = true
 		frame.isUndecorated = isDynamic
+		frame.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
+		frame.isVisible = true
 		frame.addKeyListener(copyListener)
 		frame.addWindowListener(createWindowListener())
-		frame.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
-		frame.add(displayPanel)
+		frame.add(createDisplayPanel())
 		frame.pack()
 
 		if (!isDynamic)
 			frame.setSize((frame.width * 1.4).toInt(), frame.height)
-
-		frame.isVisible = true
 	}
 
 	private fun createWindowListener(): WindowListener {
@@ -74,22 +64,21 @@ internal class DetailDisplay(panels: Array<ActionPanel>,
 	private fun createDisplayPanel(): JPanel {
 		val displayPanel = JPanel(GridLayout(0, 1))
 
-		for (panel in panels)
-			displayPanel.add(panel)
+		panels.forEach { displayPanel.add(it) }
 
 		if (hasColorPanel) {
 			colorPanel = JPanel()
 			displayPanel.add(colorPanel)
 		}
 
+		if (isDynamic)
+			displayPanel.border = BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK)
+
 		return displayPanel
 	}
 
 	private fun setPosition(framePosition: Point) {
 		val screenSize = Toolkit.getDefaultToolkit().screenSize
-		val screenWidth = screenSize.getWidth()
-		val screenHeight = screenSize.getHeight()
-
 		val frameBounds = frame.bounds
 		val frameHeight = frameBounds.height
 		val frameWidth = frameBounds.width
@@ -97,17 +86,17 @@ internal class DetailDisplay(panels: Array<ActionPanel>,
 		val rightBound = (framePosition.getX() + frameWidth).toInt()
 		val lowerBound = (framePosition.getY() + frameHeight).toInt()
 
-		val BUFFER = 10
+		val buffer = 10
 
-		if (rightBound >= screenWidth)
-			framePosition.x -= frameWidth + BUFFER
+		if (rightBound >= screenSize.getWidth())
+			framePosition.x -= frameWidth + buffer
 		else
-			framePosition.x += BUFFER
+			framePosition.x += buffer
 
-		if (lowerBound >= screenHeight)
-			framePosition.y -= frameHeight + BUFFER
+		if (lowerBound >= screenSize.getHeight())
+			framePosition.y -= frameHeight + buffer
 		else
-			framePosition.y += BUFFER
+			framePosition.y += buffer
 
 		frame.location = framePosition
 	}
@@ -116,7 +105,7 @@ internal class DetailDisplay(panels: Array<ActionPanel>,
 		if (copyListener.wasCopyRequested()) {
 			val buffer = StringBuilder()
 
-			for (panel in panels) {
+			panels.forEach { panel ->
 				if (shouldCopyLabels)
 					buffer.append(panel.staticLabelText)
 
@@ -129,8 +118,7 @@ internal class DetailDisplay(panels: Array<ActionPanel>,
 	}
 
 	fun updateComponents(mousePosition: Point, pixelColor: Color) {
-		for (panel in panels)
-			panel.performAction(mousePosition, pixelColor)
+		panels.forEach { it.performAction(mousePosition, pixelColor) }
 
 		if (hasColorPanel)
 			colorPanel!!.background = pixelColor

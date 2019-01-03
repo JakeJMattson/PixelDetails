@@ -29,26 +29,13 @@ import java.awt.*
 internal class OptionPanel(title: String): JPanel(GridLayout(0, 1)) {
 
 	val selections: BooleanArray
-		get() {
-			val checkBoxes = this.components
-			val selections = BooleanArray(checkBoxes.size)
-
-			for (i in checkBoxes.indices)
-				selections[i] = (checkBoxes[i] as JCheckBox).isSelected
-
-			return selections
-		}
+		get() = this.components.map { (it as JCheckBox).isSelected }.toBooleanArray()
 
 	init {
 		super.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), title,
 			TitledBorder.LEFT, TitledBorder.TOP))
 	}
 
-	fun addCheckBox(boxText: String, tooltip: String) {
-		val box = JCheckBox(boxText)
-		box.isSelected = true
-		box.toolTipText = tooltip
-
-		this.add(box)
-	}
+	fun addCheckBox(boxText: String, tooltip: String) =
+		this.add(JCheckBox(boxText).apply { isSelected = true; toolTipText = tooltip })
 }
