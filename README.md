@@ -41,5 +41,11 @@ page and select the version of your choice.
 Run the installer and follow the instructions provided.
 </p>
 
+## Building
+This project is built with Maven. To build the `pom.xml`, please follow the import instructions for your IDE.
+* [IntelliJ](https://www.tutorialspoint.com/maven/maven_intellij_idea.htm)
+* [Eclipse](https://www.tutorialspoint.com/maven/maven_eclispe_ide.htm)
+* [NetBeans](https://www.tutorialspoint.com/maven/maven_netbeans.htm)
+
 ## License
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
