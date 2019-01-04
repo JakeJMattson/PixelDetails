@@ -25,7 +25,7 @@ package io.github.jakejmattson.pixeldetails
 import javax.swing.*
 import java.awt.*
 
-internal class ActionPanel(val staticLabelText: String, private val action: PixelReader.Action):
+internal class ActionPanel(val staticLabelText: String, private val action: (mouse: Point, pixelColor: Color) -> String):
 		JPanel(FlowLayout(FlowLayout.LEFT)) {
 
 	private var dynamicLabel: JLabel = JLabel()
@@ -39,6 +39,6 @@ internal class ActionPanel(val staticLabelText: String, private val action: Pixe
 	}
 
 	fun performAction(mousePosition: Point, pixelColor: Color) {
-		dynamicLabel.text = action.performAction(mousePosition, pixelColor)
+		dynamicLabel.text = action.invoke(mousePosition, pixelColor)
 	}
 }
