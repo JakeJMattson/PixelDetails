@@ -32,10 +32,12 @@ internal class OptionPanel(title: String): JPanel(GridLayout(0, 1)) {
 		get() = this.components.map { (it as JCheckBox).isSelected }.toBooleanArray()
 
 	init {
-		super.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), title,
-			TitledBorder.LEFT, TitledBorder.TOP))
+		super.setBorder(BorderFactory.createTitledBorder(
+				BorderFactory.createLineBorder(Color.BLACK), title, TitledBorder.LEFT, TitledBorder.TOP))
 	}
 
-	fun addCheckBox(boxText: String, tooltip: String) =
+	fun addCheckBox(boxText: String, tooltip: String): OptionPanel {
 		this.add(JCheckBox(boxText).apply { isSelected = true; toolTipText = tooltip })
+		return this
+	}
 }

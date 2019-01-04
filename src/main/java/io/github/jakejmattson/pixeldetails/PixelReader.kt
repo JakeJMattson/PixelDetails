@@ -26,150 +26,88 @@ import java.awt.*
 import java.util.*
 import javax.swing.*
 
-/**
- * Performs pixel reading and formats data into strings.
- *
- * @author JakeJMattson
- */
-internal object PixelReader {
-    @JvmStatic
-    fun main(args: Array<String>) {
-        setup()
-    }
+fun main(args: Array<String>) {
+    setup()
+}
 
-    /**
-     * Create all necessary components and start the program.
-     */
-    private fun setup() {
-        val robot = Robot()
+private fun setup() {
+    val info = OptionPanel("Info to be displayed (Text)")
+        .addCheckBox("Coordinates", "Location (X,Y) of the mouse on the screen")
+        .addCheckBox("RGB", "Pixel color as 'Red, Green, Blue' values")
+        .addCheckBox("HSV", "Pixel color as 'Hue, Saturation, Value' values")
+        .addCheckBox("Hex", "Pixel color as Hexadecimal value")
 
-        val info = OptionPanel("Info to be displayed (Text)")
-        info.addCheckBox("Coordinates", "Location (X,Y) of the mouse on the screen")
-        info.addCheckBox("RGB", "Pixel color as 'Red, Green, Blue' values")
-        info.addCheckBox("HSV", "Pixel color as 'Hue, Saturation, Value' values")
-        info.addCheckBox("Hex", "Pixel color as Hexadecimal value")
+    val color = OptionPanel("Color panel")
+        .addCheckBox("Color panel", "Pixel color on a larger display")
 
-        val color = OptionPanel("Color panel")
-        color.addCheckBox("Color panel", "Pixel color on a larger display")
+    val placement = OptionPanel("Placement behavior")
+        .addCheckBox("Dynamic placement", "Allow the frame to \"follow\" the mouse pointer")
 
-        val placement = OptionPanel("Placement behavior")
-        placement.addCheckBox("Dynamic placement", "Allow the frame to \"follow\" the mouse pointer")
+    val copy = OptionPanel("Copy format")
+        .addCheckBox("Include labels", "Static labels will be copied along with dynamic data")
 
-        val copy = OptionPanel("Copy format")
-        copy.addCheckBox("Include labels", "Static labels will be copied along with dynamic data")
+    //If submit button not clicked, exit program
+    if (!displayOptions(info, color, placement, copy)) return
 
-        //If submit button not clicked, exit program
-        if (!displayOptions(info, color, placement, copy))
-            return
+    val panels = createPanels(info.selections) ?: return
 
-        val panels = createPanels(info.selections)
+    val hasColorPanel = color.selections.first()
+    val isDynamic = placement.selections.first()
+    val shouldCopyLabels = copy.selections.first()
 
-        if (panels.size == 0)
-            return
+    val display = DetailDisplay(panels, hasColorPanel, isDynamic, shouldCopyLabels)
+    val robot = Robot()
 
-        val hasColorPanel = color.selections[0]
-        val isDynamic = placement.selections[0]
-        val shouldCopyLabels = copy.selections[0]
+    while (display.isOpen) {
+        val mousePosition = MouseInfo.getPointerInfo().location
+        val pixelColor = robot.getPixelColor(mousePosition.x, mousePosition.y)
 
-        val display = DetailDisplay(panels, hasColorPanel, isDynamic, shouldCopyLabels)
-
-        while (display.isOpen) {
-            val mousePosition = MouseInfo.getPointerInfo().location
-            val pixelColor = robot.getPixelColor(mousePosition.x, mousePosition.y)
-
-            display.updateComponents(mousePosition, pixelColor)
-            display.copyIfRequested()
-        }
-    }
-
-    /**
-     * Allow the user to choose what data they want to see.
-     *
-     * @return A boolean array of user selections
-     */
-    private fun displayOptions(vararg options: OptionPanel): Boolean {
-        val buttonText = arrayOf<Any>("Submit")
-        val choice = JOptionPane.showOptionDialog(null, options, "Display options", JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE, null, buttonText, buttonText[0])
-
-        return choice == JOptionPane.YES_OPTION
-    }
-
-    /**
-     * Create an array of panels that will self-populate when updated with mouse information.
-     *
-     * @param selections Panels to be created (selected by user)
-     * @return Array of created panels
-     */
-    private fun createPanels(selections: BooleanArray): Array<ActionPanel> {
-        val panels = ArrayList<ActionPanel>()
-
-        //Mouse Coordinates
-        if (selections[0])
-            panels.add(ActionPanel("X,Y = ") { mouse: Point, pixelColor: Color ->
-                val coordinates = intArrayOf(mouse.x, mouse.y)
-                format("(%s, %s)", coordinates)
-            })
-
-        //RGB values
-        if (selections[1])
-            panels.add(ActionPanel("RGB = ") { mouse: Point, pixelColor: Color ->
-                val rgbInfo = intArrayOf(pixelColor.red, pixelColor.green, pixelColor.blue)
-                format("(%s, %s, %s)", rgbInfo)
-            })
-
-        //HSV values
-        if (selections[2])
-            panels.add(ActionPanel("HSV = ") { mouse: Point, pixelColor: Color ->
-                val rgbInfo = intArrayOf(pixelColor.red, pixelColor.green, pixelColor.blue)
-                val hsvData = extractHSV(rgbInfo)
-                format("(%s%%, %s%%, %s%%)", hsvData)
-            })
-
-        //Hex value
-        if (selections[3])
-            panels.add(ActionPanel("Hex = ") { mouse: Point, pixelColor: Color ->
-                val rgbInfo = intArrayOf(pixelColor.red, pixelColor.green, pixelColor.blue)
-                format("#%02X%02X%02X", rgbInfo)
-            })
-
-        return panels.toTypedArray()
-    }
-
-    /**
-     * Convert RGB values into HSV values.
-     *
-     * @param rgb
-     * An array of RGB values
-     * @return An array of HSV values
-     */
-    private fun extractHSV(rgb: IntArray): IntArray {
-        val hsv = IntArray(rgb.size)
-        val hsb = FloatArray(rgb.size)
-        Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], hsb)
-
-        for (i in hsv.indices)
-            hsv[i] = Math.round(hsb[i] * 100)
-
-        return hsv
-    }
-
-    /**
-     * Format pixel data to be displayed.
-     *
-     * @param format
-     * The format string to be applied to the data
-     * @param data
-     * The int array to be formatted
-     * @return The formatted string
-     */
-    private fun format(format: String, data: IntArray): String {
-        val dataAsObj = arrayOfNulls<Int>(data.size)
-
-        //Autobox ints to Integers
-        for (i in data.indices)
-            dataAsObj[i] = data[i]
-
-        return String.format(format, *dataAsObj)
+        display.updateComponents(mousePosition, pixelColor)
+        display.copyIfRequested()
     }
 }
+
+private fun displayOptions(vararg options: OptionPanel): Boolean {
+    val buttonText = arrayOf<Any>("Submit")
+    val choice = JOptionPane.showOptionDialog(null, options, "Display options",
+            JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, buttonText, buttonText[0])
+
+    return choice == JOptionPane.YES_OPTION
+}
+
+private fun createPanels(selections: BooleanArray): ArrayList<ActionPanel>? {
+    val panels = ArrayList<ActionPanel>()
+
+    val actions = arrayOf(
+            //Mouse Coordinates
+            ActionPanel("X,Y = ") { mouse: Point, _: Color ->
+                val coordinates = intArrayOf(mouse.x, mouse.y)
+                format("(%s, %s)", coordinates)
+            },
+            //RGB values
+            ActionPanel("RGB = ") { _: Point, pixelColor: Color ->
+                format("(%s, %s, %s)", pixelColor.toIntArray())
+            },
+            //HSV values
+            ActionPanel("HSV = ") { _: Point, pixelColor: Color ->
+                format("(%s%%, %s%%, %s%%)", extractHSV(pixelColor.toIntArray()))
+            },
+            //Hex value
+            ActionPanel("Hex = ") { _: Point, pixelColor: Color ->
+                format("#%02X%02X%02X", pixelColor.toIntArray())
+            }
+    )
+
+    selections.forEachIndexed { index: Int, isSelected: Boolean -> if (isSelected) panels.add(actions[index]) }
+    return if (panels.isNotEmpty()) panels else null
+}
+
+private fun extractHSV(rgb: IntArray): IntArray {
+    val hsb = FloatArray(rgb.size)
+    Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], hsb)
+    return hsb.map { Math.round(it * 100) }.toIntArray()
+}
+
+private fun format(format: String, data: IntArray) = String.format(format, *data.map { it as Int? }.toTypedArray())
+
+fun Color.toIntArray() = intArrayOf(this.red, this.green, this.blue)

@@ -27,13 +27,12 @@ import java.awt.event.*
 
 import javax.swing.*
 
-internal class DetailDisplay(panels: Array<ActionPanel>,
+internal class DetailDisplay(private val panels: ArrayList<ActionPanel>,
 							 private val hasColorPanel: Boolean,
 							 private val isDynamic: Boolean,
 							 private val shouldCopyLabels: Boolean) {
 
 	private val frame: JFrame = JFrame()
-	private val panels: Array<ActionPanel> = panels.clone()
 	private var colorPanel: JPanel? = null
 	private val copyListener: CopyKeyPressListener = CopyKeyPressListener()
 	var isOpen = true
