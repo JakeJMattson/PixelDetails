@@ -36,6 +36,8 @@ internal class OptionPanel(title: String): JPanel(GridLayout(0, 1)) {
 				BorderFactory.createLineBorder(Color.BLACK), title, TitledBorder.LEFT, TitledBorder.TOP))
 	}
 
+	fun firstSelection() = selections.first()
+
 	fun addCheckBox(boxText: String, tooltip: String): OptionPanel {
 		this.add(JCheckBox(boxText).apply { isSelected = true; toolTipText = tooltip })
 		return this

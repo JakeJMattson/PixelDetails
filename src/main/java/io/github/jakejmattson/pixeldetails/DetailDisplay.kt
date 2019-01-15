@@ -27,7 +27,7 @@ import java.awt.event.*
 
 import javax.swing.*
 
-internal class DetailDisplay(private val panels: ArrayList<ActionPanel>,
+internal class DetailDisplay(private val panels: List<ActionPanel>,
 							 private val hasColorPanel: Boolean,
 							 private val isDynamic: Boolean,
 							 private val shouldCopyLabels: Boolean) {
