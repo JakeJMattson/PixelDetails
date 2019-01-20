@@ -28,12 +28,6 @@ This project allows you to see the details of a pixel at the current location of
 ### Libraries
 * No additional libraries
 
-## Getting Started
-<p align="justify">
-The minimum version requirements for each additional software are listed in the badges at the top of the readme.
-It is recommended that you install the most updated version at your time of installation.
-</p>
-
 ### Installing Java
 <p align="justify">
 Visit the <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java Downloads</a> 
