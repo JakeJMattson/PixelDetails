@@ -1,7 +1,4 @@
 <p align="center">
-  <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">
-    <img src="https://img.shields.io/badge/Java-8-blue.svg" alt="Java 8">
-  </a>
   <a href="https://kotlinlang.org/">
     <img src="https://img.shields.io/badge/Kotlin-1.3.20-blue.svg" alt="Kotlin 1.3.20">
   </a>
@@ -20,9 +17,7 @@ This project allows you to see the details of a pixel at the current location of
 <img src="https://user-images.githubusercontent.com/22604455/43696005-92264226-9901-11e8-849a-68ec2249882a.PNG" width="100%"/>
 
 ## Prerequisites
-
 ### Languages
-* [Java](https://go.java/index.html?intcmp=gojava-banner-java-com)
 * [Kotlin](https://kotlinlang.org/)
 
 ### Libraries
@@ -30,8 +25,7 @@ This project allows you to see the details of a pixel at the current location of
 
 ### Installing Java
 <p align="justify">
-Visit the <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java Downloads</a> 
-page and select the version of your choice.
+Visit the <a href="https://jdk.java.net/11/">Java Downloads</a> page and select the version of your choice.
 Run the installer and follow the instructions provided.
 </p>
 
