@@ -14,6 +14,7 @@
 
         <!-- Version Numbers -->
         <kotlin.version>1.3.20</kotlin.version>
+        <jnativehook.version>2.1.0</jnativehook.version>
     </properties>
 
     <dependencies>
@@ -21,6 +22,12 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
             <version>${kotlin.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.1stleg</groupId>
+            <artifactId>jnativehook</artifactId>
+            <version>${jnativehook.version}</version>
         </dependency>
     </dependencies>
 

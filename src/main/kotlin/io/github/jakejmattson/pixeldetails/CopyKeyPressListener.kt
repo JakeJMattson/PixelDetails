@@ -22,18 +22,38 @@
  */
 package io.github.jakejmattson.pixeldetails
 
-import java.awt.event.*
+import org.jnativehook.keyboard.*
 
-internal class CopyKeyPressListener: KeyListener {
+internal class CopyKeyPressListener: NativeKeyListener {
 	private var shouldCopy: Boolean = false
+	private var isCtrlDown: Boolean = false
+	private var isCDown: Boolean = false
 
-	@Synchronized override fun keyPressed(e: KeyEvent) {
-		if (e.isControlDown && e.keyCode == KeyEvent.VK_C)
+	override fun nativeKeyPressed(p0: NativeKeyEvent) {
+		val key = p0.keyCode
+
+		if (key == 46)
+			isCDown = true
+		else if (key == 29)
+			isCtrlDown = true
+
+		if (isCtrlDown && isCDown)
 			shouldCopy = true
 	}
 
-	override fun keyReleased(e: KeyEvent) {}
-	override fun keyTyped(e: KeyEvent) {}
+	override fun nativeKeyReleased(p0: NativeKeyEvent) {
+		val key = p0.keyCode
+
+		if (key == 46)
+			isCDown = false
+		else if (key == 29)
+			isCtrlDown = false
+
+		if (!isCtrlDown || !isCDown)
+			shouldCopy = false
+	}
+
+	override fun nativeKeyTyped(p0: NativeKeyEvent) {}
 
 	fun wasCopyRequested(): Boolean {
 		val state = shouldCopy

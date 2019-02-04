@@ -21,9 +21,11 @@
  */
 package io.github.jakejmattson.pixeldetails
 
+import org.jnativehook.*
 import java.awt.*
 import java.awt.datatransfer.StringSelection
 import java.awt.event.*
+import java.util.logging.*
 
 import javax.swing.*
 
@@ -32,24 +34,40 @@ internal class DetailDisplay(private val panels: List<ActionPanel>,
 							 private val isDynamic: Boolean,
 							 private val shouldCopyLabels: Boolean) {
 
-	private val frame: JFrame = JFrame()
+	private val frame: JFrame
 	private var colorPanel: JPanel? = null
-	private val copyListener: CopyKeyPressListener = CopyKeyPressListener()
+	private val copyListener = CopyKeyPressListener()
+
 	var isOpen = true
 		private set
 
 	init {
-		frame.isAlwaysOnTop = true
-		frame.isUndecorated = isDynamic
-		frame.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
-		frame.isVisible = true
-		frame.addKeyListener(copyListener)
-		frame.addWindowListener(createWindowListener())
-		frame.add(createDisplayPanel())
-		frame.pack()
+		frame = JFrame().apply {
+			isAlwaysOnTop = true
+			isUndecorated = isDynamic
+			defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
+			isVisible = true
+			addWindowListener(createWindowListener())
+			add(createDisplayPanel())
+			pack()
 
-		if (!isDynamic)
-			frame.setSize((frame.width * 1.4).toInt(), frame.height)
+			if (!isDynamic)
+				setSize((width * 1.4).toInt(), height)
+		}
+
+		try {
+			disableLogging()
+			GlobalScreen.registerNativeHook()
+			GlobalScreen.addNativeKeyListener(copyListener)
+		} catch (e: NativeHookException) {
+			e.printStackTrace()
+		}
+	}
+
+	private fun disableLogging() {
+		val logger = Logger.getLogger(GlobalScreen::class.java.getPackage().name)
+		logger.level = Level.WARNING
+		logger.useParentHandlers = false
 	}
 
 	private fun createWindowListener(): WindowListener {
