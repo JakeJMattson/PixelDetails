@@ -2,6 +2,9 @@
   <a href="https://kotlinlang.org/">
     <img src="https://img.shields.io/badge/Kotlin-1.3.20-blue.svg" alt="Kotlin 1.3.20">
   </a>
+  <a href="https://github.com/kwhat/jnativehook">
+    <img src="https://img.shields.io/badge/jnativehook-2.1.0-blue.svg" alt="jnativehook 2.1.0">
+  </a>
   <a href="https://GitHub.com/JakeJMattson/PixelDetails/releases/">
     <img src="https://img.shields.io/github/release/JakeJMattson/PixelDetails.svg" alt="release">
   </a>
@@ -21,7 +24,7 @@ This project allows you to see the details of a pixel at the current location of
 * [Kotlin](https://kotlinlang.org/)
 
 ### Libraries
-* No additional libraries
+* [JNativeHook](https://github.com/kwhat/jnativehook)
 
 ### Installing Java
 <p align="justify">
