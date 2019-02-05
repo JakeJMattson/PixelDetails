@@ -32,6 +32,8 @@ internal class DetailDisplay(private val panels: List<ActionPanel>,
 							 private val isDynamic: Boolean,
 							 shouldCopyLabels: Boolean) {
 
+	private val colorPanel: JPanel? = if (hasColorPanel) JPanel() else null
+	private val copyListener = CopyKeyPressListener(panels, shouldCopyLabels)
 	private val frame = JFrame().apply {
 		isAlwaysOnTop = true
 		isUndecorated = isDynamic
@@ -44,9 +46,6 @@ internal class DetailDisplay(private val panels: List<ActionPanel>,
 		if (!isDynamic)
 			setSize((width * 1.4).toInt(), height)
 	}
-
-	private var colorPanel: JPanel? = if (hasColorPanel) JPanel() else null
-	private val copyListener = CopyKeyPressListener(panels, shouldCopyLabels)
 	var isOpen = true
 		private set
 
@@ -100,7 +99,7 @@ internal class DetailDisplay(private val panels: List<ActionPanel>,
 		panels.forEach { it.performAction(mousePosition, pixelColor) }
 
 		if (colorPanel != null)
-			colorPanel!!.background = pixelColor
+			colorPanel.background = pixelColor
 
 		if (isDynamic) {
 			setPosition(mousePosition)
