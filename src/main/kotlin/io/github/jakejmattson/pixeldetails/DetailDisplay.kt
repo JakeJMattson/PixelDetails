@@ -21,78 +21,56 @@
  */
 package io.github.jakejmattson.pixeldetails
 
-import org.jnativehook.*
+import org.jnativehook.GlobalScreen
 import java.awt.*
-import java.awt.datatransfer.StringSelection
 import java.awt.event.*
 import java.util.logging.*
-
 import javax.swing.*
 
 internal class DetailDisplay(private val panels: List<ActionPanel>,
-							 private val hasColorPanel: Boolean,
+							 hasColorPanel: Boolean,
 							 private val isDynamic: Boolean,
-							 private val shouldCopyLabels: Boolean) {
+							 shouldCopyLabels: Boolean) {
 
-	private val frame: JFrame
-	private var colorPanel: JPanel? = null
-	private val copyListener = CopyKeyPressListener()
+	private val frame = JFrame().apply {
+		isAlwaysOnTop = true
+		isUndecorated = isDynamic
+		defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
+		isVisible = true
+		addWindowListener(createWindowListener())
+		add(createDisplayPanel())
+		pack()
 
+		if (!isDynamic)
+			setSize((width * 1.4).toInt(), height)
+	}
+
+	private var colorPanel: JPanel? = if (hasColorPanel) JPanel() else null
+	private val copyListener = CopyKeyPressListener(panels, shouldCopyLabels)
 	var isOpen = true
 		private set
 
 	init {
-		frame = JFrame().apply {
-			isAlwaysOnTop = true
-			isUndecorated = isDynamic
-			defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
-			isVisible = true
-			addWindowListener(createWindowListener())
-			add(createDisplayPanel())
-			pack()
+		Logger.getLogger(GlobalScreen::class.java.getPackage().name).apply { level = Level.WARNING; useParentHandlers = false }
+		GlobalScreen.registerNativeHook()
+		GlobalScreen.addNativeKeyListener(copyListener)
+	}
 
-			if (!isDynamic)
-				setSize((width * 1.4).toInt(), height)
-		}
-
-		try {
-			disableLogging()
-			GlobalScreen.registerNativeHook()
-			GlobalScreen.addNativeKeyListener(copyListener)
-		} catch (e: NativeHookException) {
-			e.printStackTrace()
+	private fun createWindowListener() = object: WindowAdapter() {
+		override fun windowClosing(windowClosed: WindowEvent?) {
+			isOpen = false
 		}
 	}
 
-	private fun disableLogging() {
-		val logger = Logger.getLogger(GlobalScreen::class.java.getPackage().name)
-		logger.level = Level.WARNING
-		logger.useParentHandlers = false
-	}
+	private fun createDisplayPanel() = JPanel(GridLayout(0, 1)).apply {
+			panels.forEach { add(it) }
 
-	private fun createWindowListener(): WindowListener {
-		return object: WindowAdapter() {
-			override fun windowClosing(windowClosed: WindowEvent?) {
-				isOpen = false
-			}
+			if (colorPanel != null)
+				add(colorPanel)
+
+			if (isDynamic)
+				border = BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK)
 		}
-	}
-
-	private fun createDisplayPanel(): JPanel {
-		val displayPanel = JPanel(GridLayout(0, 1))
-
-		panels.forEach { displayPanel.add(it) }
-
-		if (hasColorPanel) {
-			colorPanel = JPanel()
-			displayPanel.add(colorPanel)
-		}
-
-		if (isDynamic)
-			displayPanel.border = BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK)
-
-		return displayPanel
-	}
 
 	private fun setPosition(framePosition: Point) {
 		val screenSize = Toolkit.getDefaultToolkit().screenSize
@@ -118,26 +96,10 @@ internal class DetailDisplay(private val panels: List<ActionPanel>,
 		frame.location = framePosition
 	}
 
-	fun copyIfRequested() {
-		if (copyListener.wasCopyRequested()) {
-			val buffer = StringBuilder()
-
-			panels.forEach { panel ->
-				if (shouldCopyLabels)
-					buffer.append(panel.staticLabelText)
-
-				buffer.append(panel.text).append(System.lineSeparator())
-			}
-
-			val stringSelection = StringSelection(buffer.toString())
-			Toolkit.getDefaultToolkit().systemClipboard.setContents(stringSelection, null)
-		}
-	}
-
 	fun updateComponents(mousePosition: Point, pixelColor: Color) {
 		panels.forEach { it.performAction(mousePosition, pixelColor) }
 
-		if (hasColorPanel)
+		if (colorPanel != null)
 			colorPanel!!.background = pixelColor
 
 		if (isDynamic) {

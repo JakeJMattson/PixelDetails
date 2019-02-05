@@ -23,41 +23,42 @@
 package io.github.jakejmattson.pixeldetails
 
 import org.jnativehook.keyboard.*
+import java.awt.Toolkit
+import java.awt.datatransfer.StringSelection
 
-internal class CopyKeyPressListener: NativeKeyListener {
-	private var shouldCopy: Boolean = false
+internal class CopyKeyPressListener(private val panels: List<ActionPanel>, private val shouldCopyLabels: Boolean): NativeKeyListener {
 	private var isCtrlDown: Boolean = false
 	private var isCDown: Boolean = false
 
-	override fun nativeKeyPressed(p0: NativeKeyEvent) {
-		val key = p0.keyCode
-
-		if (key == 46)
-			isCDown = true
-		else if (key == 29)
-			isCtrlDown = true
+	override fun nativeKeyPressed(event: NativeKeyEvent) {
+		when (event.keyCode) {
+			29 -> isCtrlDown = true
+			46 -> isCDown = true
+		}
 
 		if (isCtrlDown && isCDown)
-			shouldCopy = true
+			copy()
 	}
 
-	override fun nativeKeyReleased(p0: NativeKeyEvent) {
-		val key = p0.keyCode
-
-		if (key == 46)
-			isCDown = false
-		else if (key == 29)
-			isCtrlDown = false
-
-		if (!isCtrlDown || !isCDown)
-			shouldCopy = false
+	override fun nativeKeyReleased(event: NativeKeyEvent) {
+		when (event.keyCode) {
+			29 -> isCtrlDown = false
+			46 -> isCDown = false
+		}
 	}
 
-	override fun nativeKeyTyped(p0: NativeKeyEvent) {}
+	override fun nativeKeyTyped(event: NativeKeyEvent) {}
 
-	fun wasCopyRequested(): Boolean {
-		val state = shouldCopy
-		shouldCopy = false
-		return state
+	private fun copy() {
+		val text = StringBuilder().apply {
+			panels.forEach { panel ->
+				if (shouldCopyLabels)
+					append(panel.staticLabelText)
+
+				append(panel.text).append(System.lineSeparator())
+			}
+		}.toString()
+
+		Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(text), null)
 	}
 }

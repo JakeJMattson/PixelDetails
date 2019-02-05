@@ -22,13 +22,13 @@
  */
 package io.github.jakejmattson.pixeldetails
 
-import javax.swing.*
 import java.awt.*
+import javax.swing.*
 
 internal class ActionPanel(val staticLabelText: String, private val action: (mouse: Point, pixelColor: Color) -> String):
 		JPanel(FlowLayout(FlowLayout.LEFT)) {
 
-	private var dynamicLabel: JLabel = JLabel()
+	private var dynamicLabel = JLabel()
 
 	val text: String
 		get() = dynamicLabel.text

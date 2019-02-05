@@ -23,11 +23,9 @@
 package io.github.jakejmattson.pixeldetails
 
 import java.awt.*
-import javax.swing.*
+import javax.swing.JOptionPane
 
-fun main(args: Array<String>) {
-    setup()
-}
+fun main() = setup()
 
 private fun setup() {
     val info = OptionPanel("Info to be displayed (Text)")
@@ -61,7 +59,6 @@ private fun setup() {
         val pixelColor = robot.getPixelColor(mousePosition)
 
         display.updateComponents(mousePosition, pixelColor)
-        display.copyIfRequested()
     }
 }
 
