@@ -21,7 +21,7 @@
  */
 package io.github.jakejmattson.pixeldetails
 
-import org.jnativehook.GlobalScreen
+import org.jnativehook.*
 import java.awt.*
 import java.awt.event.*
 import java.util.logging.*
@@ -50,9 +50,13 @@ internal class DetailDisplay(private val panels: List<ActionPanel>,
 		private set
 
 	init {
-		Logger.getLogger(GlobalScreen::class.java.getPackage().name).apply { level = Level.WARNING; useParentHandlers = false }
-		GlobalScreen.registerNativeHook()
-		GlobalScreen.addNativeKeyListener(copyListener)
+		try {
+			Logger.getLogger(GlobalScreen::class.java.getPackage().name).apply { level = Level.WARNING; useParentHandlers = false }
+			GlobalScreen.registerNativeHook()
+			GlobalScreen.addNativeKeyListener(copyListener)
+		} catch (e: NativeHookException) {
+			println("Failed to register Native Hook. Copying will be disabled.")
+		}
 	}
 
 	private fun createWindowListener() = object: WindowAdapter() {
