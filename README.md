@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://kotlinlang.org/">
-    <img src="https://img.shields.io/badge/Kotlin-1.3.20-blue.svg" alt="Kotlin 1.3.20">
+    <img src="https://img.shields.io/badge/Kotlin-1.3.21-blue.svg" alt="Kotlin 1.3.21">
   </a>
   <a href="https://github.com/kwhat/jnativehook">
     <img src="https://img.shields.io/badge/jnativehook-2.1.0-blue.svg" alt="jnativehook 2.1.0">
@@ -36,7 +36,6 @@ Run the installer and follow the instructions provided.
 This project is built with Maven. To build the `pom.xml`, please follow the import instructions for your IDE.
 * [IntelliJ](https://www.tutorialspoint.com/maven/maven_intellij_idea.htm)
 * [Eclipse](https://www.tutorialspoint.com/maven/maven_eclispe_ide.htm)
-* [NetBeans](https://www.tutorialspoint.com/maven/maven_netbeans.htm)
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
