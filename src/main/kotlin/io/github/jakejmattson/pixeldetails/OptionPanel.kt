@@ -22,9 +22,9 @@
  */
 package io.github.jakejmattson.pixeldetails
 
+import java.awt.*
 import javax.swing.*
 import javax.swing.border.TitledBorder
-import java.awt.*
 
 internal class OptionPanel(title: String): JPanel(GridLayout(0, 1)) {
 
@@ -32,8 +32,8 @@ internal class OptionPanel(title: String): JPanel(GridLayout(0, 1)) {
 		get() = this.components.map { (it as JCheckBox).isSelected }.toBooleanArray()
 
 	init {
-		super.setBorder(BorderFactory.createTitledBorder(
-				BorderFactory.createLineBorder(Color.BLACK), title, TitledBorder.LEFT, TitledBorder.TOP))
+		border = BorderFactory.createTitledBorder(
+			BorderFactory.createLineBorder(Color.BLACK), title, TitledBorder.LEFT, TitledBorder.TOP)
 	}
 
 	fun firstSelection() = selections.first()

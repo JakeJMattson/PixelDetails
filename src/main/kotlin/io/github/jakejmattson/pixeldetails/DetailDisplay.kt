@@ -33,7 +33,6 @@ internal class DetailDisplay(private val panels: List<ActionPanel>,
 							 shouldCopyLabels: Boolean) {
 
 	private val colorPanel: JPanel? = if (hasColorPanel) JPanel() else null
-	private val copyListener = CopyKeyPressListener(panels, shouldCopyLabels)
 	private val frame = JFrame().apply {
 		isAlwaysOnTop = true
 		isUndecorated = isDynamic
@@ -53,7 +52,7 @@ internal class DetailDisplay(private val panels: List<ActionPanel>,
 		try {
 			Logger.getLogger(GlobalScreen::class.java.getPackage().name).apply { level = Level.WARNING; useParentHandlers = false }
 			GlobalScreen.registerNativeHook()
-			GlobalScreen.addNativeKeyListener(copyListener)
+			GlobalScreen.addNativeKeyListener(CopyKeyPressListener(panels, shouldCopyLabels))
 		} catch (e: NativeHookException) {
 			println("Failed to register Native Hook. Copying will be disabled.")
 		}
@@ -77,13 +76,10 @@ internal class DetailDisplay(private val panels: List<ActionPanel>,
 
 	private fun setPosition(framePosition: Point) {
 		val screenSize = Toolkit.getDefaultToolkit().screenSize
-		val frameBounds = frame.bounds
-		val frameHeight = frameBounds.height
-		val frameWidth = frameBounds.width
-
+		val frameHeight = frame.bounds.height
+		val frameWidth = frame.bounds.width
 		val rightBound = (framePosition.getX() + frameWidth).toInt()
 		val lowerBound = (framePosition.getY() + frameHeight).toInt()
-
 		val buffer = 10
 
 		if (rightBound >= screenSize.getWidth())

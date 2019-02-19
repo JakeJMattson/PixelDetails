@@ -47,7 +47,7 @@ internal class CopyKeyPressListener(private val panels: List<ActionPanel>, priva
 		StringSelection(StringBuilder().apply {
 				panels.forEach { panel ->
 					if (shouldCopyLabels)
-						append(panel.staticLabelText)
+						append(panel.labelText)
 
 					append(panel.text + System.lineSeparator())
 				}

@@ -70,28 +70,12 @@ private fun displayOptions(vararg options: OptionPanel): Boolean {
     return choice == JOptionPane.YES_OPTION
 }
 
-private fun createPanels(selections: BooleanArray): List<ActionPanel>? {
-    val actions = arrayOf(
-            //Mouse Coordinates
-            ActionPanel("X,Y = ") { mouse: Point, _: Color ->
-                "(%s, %s)".formatArray(mouse.toIntArray())
-            },
-            //RGB values
-            ActionPanel("RGB = ") { _: Point, pixelColor: Color ->
-                "(%s, %s, %s)".formatArray(pixelColor.toIntArray())
-            },
-            //HSV values
-            ActionPanel("HSV = ") { _: Point, pixelColor: Color ->
-                "(%s%%, %s%%, %s%%)".formatArray(pixelColor.toHSV())
-            },
-            //Hex value
-            ActionPanel("Hex = ") { _: Point, pixelColor: Color ->
-                "#%02X%02X%02X".formatArray(pixelColor.toIntArray())
-            }
-    )
-
-    return selections.zip(actions).filter { it.first }.map { it.second }.takeIf { it.isNotEmpty() }
-}
+private fun createPanels(selections: BooleanArray) = selections.zip(arrayOf(
+        ActionPanel("X,Y = ") { mouse: Point, _: Color -> "(%s, %s)".formatArray(mouse.toIntArray()) },
+        ActionPanel("RGB = ") { _: Point, pixelColor: Color -> "(%s, %s, %s)".formatArray(pixelColor.toIntArray()) },
+        ActionPanel("HSV = ") { _: Point, pixelColor: Color -> "(%s%%, %s%%, %s%%)".formatArray(pixelColor.toHSV()) },
+        ActionPanel("Hex = ") { _: Point, pixelColor: Color -> "#%02X%02X%02X".formatArray(pixelColor.toIntArray()) }
+    )).filter { it.first }.map { it.second }.takeIf { it.isNotEmpty() }
 
 fun String.formatArray(data: IntArray) = String.format(this, *data.map { it as Int? }.toTypedArray())
 fun Robot.getPixelColor(point: Point) = getPixelColor(point.x, point.y)
