@@ -2,6 +2,7 @@ package io.github.jakejmattson.pixeldetails
 
 import java.awt.*
 import javax.swing.JOptionPane
+import kotlin.math.round
 
 fun main() = setup()
 
@@ -24,7 +25,7 @@ private fun setup() {
     //If submit button not clicked, exit program
     if (!displayOptions(info, color, placement, copy)) return
 
-    val panels = createPanels(info.selections) ?: return
+    val panels = createPanels(info.selections).takeIf { it.isNotEmpty() } ?: return
     val hasColorPanel = color.firstSelection()
     val isDynamic = placement.firstSelection()
     val shouldCopyLabels = copy.firstSelection()
@@ -40,24 +41,20 @@ private fun setup() {
     }
 }
 
-private fun displayOptions(vararg options: OptionPanel): Boolean {
-    val buttonText = arrayOf<Any>("Submit")
-    val choice = JOptionPane.showOptionDialog(null, options, "Display options",
-            JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, buttonText, buttonText[0])
-
-    return choice == JOptionPane.YES_OPTION
-}
+private fun displayOptions(vararg options: OptionPanel) =
+    JOptionPane.showOptionDialog(null, options, "Display options", JOptionPane.DEFAULT_OPTION,
+        JOptionPane.PLAIN_MESSAGE, null, arrayOf<Any>("Submit"), null) == JOptionPane.YES_OPTION
 
 private fun createPanels(selections: BooleanArray) = selections.zip(arrayOf(
-        ActionPanel("X,Y = ") { mouse: Point, _: Color -> "(%s, %s)".formatArray(mouse.toIntArray()) },
-        ActionPanel("RGB = ") { _: Point, pixelColor: Color -> "(%s, %s, %s)".formatArray(pixelColor.toIntArray()) },
-        ActionPanel("HSV = ") { _: Point, pixelColor: Color -> "(%s%%, %s%%, %s%%)".formatArray(pixelColor.toHSV()) },
-        ActionPanel("Hex = ") { _: Point, pixelColor: Color -> "#%02X%02X%02X".formatArray(pixelColor.toIntArray()) }
-    )).filter { it.first }.map { it.second }.takeIf { it.isNotEmpty() }
+        CoordinatePanel("X,Y = ") { mouse: Point-> "(%s, %s)".formatArray(mouse.toIntArray()) },
+        ColorPanel("RGB = ") { pixelColor: Color -> "(%s, %s, %s)".formatArray(pixelColor.toIntArray()) },
+        ColorPanel("HSV = ") { pixelColor: Color -> "(%s%%, %s%%, %s%%)".formatArray(pixelColor.toHSV()) },
+        ColorPanel("Hex = ") { pixelColor: Color -> "#%02X%02X%02X".formatArray(pixelColor.toIntArray()) }
+    )).filter { it.first }.map { it.second }
 
-fun String.formatArray(data: IntArray) = String.format(this, *data.map { it as Int? }.toTypedArray())
+fun String.formatArray(data: Array<Int>) = String.format(this, *data as Array<out Any?>)
 fun Robot.getPixelColor(point: Point) = getPixelColor(point.x, point.y)
-fun Point.toIntArray() = intArrayOf(x, y)
-fun Color.toIntArray() = intArrayOf(red, green, blue)
+fun Point.toIntArray() = arrayOf(x, y)
+fun Color.toIntArray() = arrayOf(red, green, blue)
 fun Color.toHSV() = FloatArray(3).apply { Color.RGBtoHSB(red, green, blue, this) }
-        .map { Math.round(it * 100) }.toIntArray()
+        .map { round(it * 100).toInt() }.toTypedArray()

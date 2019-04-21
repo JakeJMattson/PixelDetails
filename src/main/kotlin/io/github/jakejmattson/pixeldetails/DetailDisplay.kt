@@ -57,25 +57,36 @@ internal class DetailDisplay(private val panels: List<ActionPanel>,
 		val screenSize = Toolkit.getDefaultToolkit().screenSize
 		val frameHeight = frame.bounds.height
 		val frameWidth = frame.bounds.width
-		val rightBound = (framePosition.getX() + frameWidth).toInt()
-		val lowerBound = (framePosition.getY() + frameHeight).toInt()
 		val buffer = 10
 
-		if (rightBound >= screenSize.getWidth())
-			framePosition.x -= frameWidth + buffer
-		else
-			framePosition.x += buffer
+		with(framePosition) {
+			val rightBound = framePosition.getX() + frameWidth
+			val lowerBound = framePosition.getY() + frameHeight
 
-		if (lowerBound >= screenSize.getHeight())
-			framePosition.y -= frameHeight + buffer
-		else
-			framePosition.y += buffer
+			if (rightBound >= screenSize.getWidth())
+				x -= frameWidth + buffer
+			else
+				x += buffer
+
+			if (lowerBound >= screenSize.getHeight())
+				y -= frameHeight + buffer
+			else
+				y += buffer
+		}
 
 		frame.location = framePosition
 	}
 
 	fun updateComponents(mousePosition: Point, pixelColor: Color) {
-		panels.forEach { it.performAction(mousePosition, pixelColor) }
+		panels.forEach {
+			it.performAction(
+				when (it) {
+					is CoordinatePanel -> mousePosition
+					is ColorPanel -> pixelColor
+					else -> pixelColor
+				}
+			)
+		}
 
 		if (colorPanel != null)
 			colorPanel.background = pixelColor
