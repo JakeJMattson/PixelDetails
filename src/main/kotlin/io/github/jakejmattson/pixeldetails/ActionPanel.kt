@@ -11,8 +11,8 @@ abstract class ActionPanel(val labelText: String) : JPanel(FlowLayout(FlowLayout
         set(value) {dynamicLabel.text = value}
 
     init {
-        add(JLabel(labelText).apply { font = Font("Monospaced", Font.BOLD, 12) })
-        add(dynamicLabel)
+        this.add(JLabel(labelText).apply { font = Font("Monospaced", Font.BOLD, 12) })
+        this.add(dynamicLabel)
     }
 
     abstract fun performAction(data: Any)

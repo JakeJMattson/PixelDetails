@@ -22,12 +22,12 @@ internal class CopyKeyPressListener(private val panels: List<ActionPanel>, priva
     override fun nativeKeyTyped(event: NativeKeyEvent) = Unit
 
     private fun copy() = Toolkit.getDefaultToolkit().systemClipboard.setContents(
-        StringSelection(StringBuilder().apply {
+        StringSelection(buildString {
             panels.forEach { panel ->
                 if (shouldCopyLabels)
                     append(panel.labelText)
 
                 appendln(panel.text)
             }
-        }.toString()), null)
+        }), null)
 }

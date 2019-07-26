@@ -2,7 +2,7 @@ package io.github.jakejmattson.pixeldetails
 
 import java.awt.*
 import javax.swing.JOptionPane
-import kotlin.math.round
+import kotlin.math.roundToInt
 
 fun main() = setup()
 
@@ -57,4 +57,4 @@ fun Robot.getPixelColor(point: Point) = getPixelColor(point.x, point.y)
 fun Point.toIntArray() = arrayOf(x, y)
 fun Color.toIntArray() = arrayOf(red, green, blue)
 fun Color.toHSV() = FloatArray(3).apply { Color.RGBtoHSB(red, green, blue, this) }
-        .map { round(it * 100).toInt() }.toTypedArray()
+        .map { (it * 100).roundToInt() }.toTypedArray()
