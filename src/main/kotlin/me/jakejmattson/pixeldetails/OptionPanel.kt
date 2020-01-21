@@ -1,4 +1,4 @@
-package io.github.jakejmattson.pixeldetails
+package me.jakejmattson.pixeldetails
 
 import java.awt.*
 import javax.swing.*

@@ -1,4 +1,4 @@
-package io.github.jakejmattson.pixeldetails
+package me.jakejmattson.pixeldetails
 
 import java.awt.*
 import javax.swing.JOptionPane
@@ -46,10 +46,10 @@ private fun displayOptions(vararg options: OptionPanel) =
         JOptionPane.PLAIN_MESSAGE, null, arrayOf<Any>("Submit"), null) == JOptionPane.YES_OPTION
 
 private fun createPanels(selections: BooleanArray) = selections.zip(arrayOf(
-        CoordinatePanel("X,Y = ") { mouse: Point-> "(%s, %s)".formatArray(mouse.toIntArray()) },
-        ColorPanel("RGB = ") { pixelColor: Color -> "(%s, %s, %s)".formatArray(pixelColor.toIntArray()) },
-        ColorPanel("HSV = ") { pixelColor: Color -> "(%s%%, %s%%, %s%%)".formatArray(pixelColor.toHSV()) },
-        ColorPanel("Hex = ") { pixelColor: Color -> "#%02X%02X%02X".formatArray(pixelColor.toIntArray()) }
+    CoordinatePanel("X,Y = ") { mouse: Point -> "(%s, %s)".formatArray(mouse.toIntArray()) },
+    ColorPanel("RGB = ") { pixelColor: Color -> "(%s, %s, %s)".formatArray(pixelColor.toIntArray()) },
+    ColorPanel("HSV = ") { pixelColor: Color -> "(%s%%, %s%%, %s%%)".formatArray(pixelColor.toHSV()) },
+    ColorPanel("Hex = ") { pixelColor: Color -> "#%02X%02X%02X".formatArray(pixelColor.toIntArray()) }
     )).filter { it.first }.map { it.second }
 
 fun String.formatArray(data: Array<Int>) = String.format(this, *data as Array<out Any?>)

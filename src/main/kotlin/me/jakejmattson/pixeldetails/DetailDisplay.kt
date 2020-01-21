@@ -1,4 +1,4 @@
-package io.github.jakejmattson.pixeldetails
+package me.jakejmattson.pixeldetails
 
 import org.jnativehook.*
 import java.awt.*
