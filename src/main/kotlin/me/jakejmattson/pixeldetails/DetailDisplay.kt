@@ -37,7 +37,7 @@ internal class DetailDisplay(private val panels: List<ActionPanel>,
         }
     }
 
-    private fun createWindowListener() = object: WindowAdapter() {
+    private fun createWindowListener() = object : WindowAdapter() {
         override fun windowClosing(windowClosed: WindowEvent?) {
             isOpen = false
         }

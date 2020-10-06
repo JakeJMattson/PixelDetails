@@ -4,11 +4,13 @@ import java.awt.*
 import javax.swing.*
 
 abstract class ActionPanel(val labelText: String) : JPanel(FlowLayout(FlowLayout.LEFT)) {
-    private var dynamicLabel = JLabel()
+    private val dynamicLabel = JLabel()
 
     var text: String
         get() = dynamicLabel.text
-        set(value) {dynamicLabel.text = value}
+        set(value) {
+            dynamicLabel.text = value
+        }
 
     init {
         this.add(JLabel(labelText).apply { font = Font("Monospaced", Font.BOLD, 12) })
