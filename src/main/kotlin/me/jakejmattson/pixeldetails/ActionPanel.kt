@@ -3,7 +3,7 @@ package me.jakejmattson.pixeldetails
 import java.awt.*
 import javax.swing.*
 
-abstract class ActionPanel(val labelText: String) : JPanel(FlowLayout(FlowLayout.LEFT)) {
+class ActionPanel(val labelText: String, private val action: (Pixel) -> String) : JPanel(FlowLayout(FlowLayout.LEFT)) {
     private val dynamicLabel = JLabel()
 
     var text: String
@@ -17,17 +17,9 @@ abstract class ActionPanel(val labelText: String) : JPanel(FlowLayout(FlowLayout
         this.add(dynamicLabel)
     }
 
-    abstract fun performAction(data: Any)
-}
-
-class CoordinatePanel(labelText: String, private val action: (mouse: Point) -> String) : ActionPanel(labelText) {
-    override fun performAction(data: Any) {
-        text = action.invoke(data as Point)
+    fun performAction(pixel: Pixel) {
+        text = action.invoke(pixel)
     }
 }
 
-class ColorPanel(labelText: String, private val action: (pixelColor: Color) -> String) : ActionPanel(labelText) {
-    override fun performAction(data: Any) {
-        text = action.invoke(data as Color)
-    }
-}
+data class Pixel(val location: Point, val color: Color)

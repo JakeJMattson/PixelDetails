@@ -52,10 +52,10 @@ private fun displayOptions(vararg options: OptionPanel) {
 }
 
 private fun createPanels(selections: BooleanArray) = selections.zip(listOf(
-    CoordinatePanel("X,Y = ") { mouse: Point -> "(%s, %s)".format(mouse.x, mouse.y) },
-    ColorPanel("RGB = ") { pixelColor: Color -> "(%s, %s, %s)".format(pixelColor) },
-    ColorPanel("HSV = ") { pixelColor: Color -> "(%s%%, %s%%, %s%%)".format(*pixelColor.toHSV()) },
-    ColorPanel("Hex = ") { pixelColor: Color -> "#%02X%02X%02X".format(pixelColor) }
+    ActionPanel("X,Y = ") { "(%s, %s)".format(it.location.x, it.location.y) },
+    ActionPanel("RGB = ") { "(%s, %s, %s)".format(it.color) },
+    ActionPanel("HSV = ") { "(%s%%, %s%%, %s%%)".format(*it.color.toHSV()) },
+    ActionPanel("Hex = ") { "#%02X%02X%02X".format(it.color) }
 )).filter { it.first }.map { it.second }
 
 fun String.format(color: Color) = with (color) { format(red, green, blue) }

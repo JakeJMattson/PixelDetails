@@ -78,14 +78,10 @@ internal class DetailDisplay(private val panels: List<ActionPanel>,
     }
 
     fun updateComponents(mousePosition: Point, pixelColor: Color) {
+        val pixel = Pixel(mousePosition, pixelColor)
+
         panels.forEach {
-            it.performAction(
-                when (it) {
-                    is CoordinatePanel -> mousePosition
-                    is ColorPanel -> pixelColor
-                    else -> pixelColor
-                }
-            )
+            it.performAction(pixel)
         }
 
         if (colorPanel != null)
