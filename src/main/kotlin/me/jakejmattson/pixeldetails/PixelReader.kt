@@ -52,15 +52,8 @@ private fun displayOptions(vararg options: OptionPanel) {
 }
 
 private fun createPanels(selections: BooleanArray) = selections.zip(listOf(
-    ActionPanel("X,Y = ") { "(%s, %s)".format(it.location.x, it.location.y) },
-    ActionPanel("RGB = ") { "(%s, %s, %s)".format(it.color) },
-    ActionPanel("HSV = ") { "(%s%%, %s%%, %s%%)".format(*it.color.toHSV()) },
-    ActionPanel("Hex = ") { "#%02X%02X%02X".format(it.color) }
+    ActionPanel("X,Y = ") { it.coordinates },
+    ActionPanel("RGB = ") { it.rgb },
+    ActionPanel("HSV = ") { it.hsv },
+    ActionPanel("Hex = ") { it.hex }
 )).filter { it.first }.map { it.second }
-
-fun String.format(color: Color) = with (color) { format(red, green, blue) }
-
-fun Color.toHSV() = FloatArray(3)
-    .apply { Color.RGBtoHSB(red, green, blue, this) }
-    .map { (it * 100).roundToInt() }
-    .toTypedArray()
