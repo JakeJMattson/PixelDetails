@@ -5,11 +5,12 @@ import java.awt.*
 import java.awt.event.*
 import java.util.logging.*
 import javax.swing.*
+import javax.swing.border.TitledBorder
 
-internal class DetailDisplay(private val panels: List<ActionPanel>,
-                             hasColorPanel: Boolean,
-                             private val isDynamic: Boolean,
-                             shouldCopyLabels: Boolean) {
+internal class Display(private val panels: List<ActionPanel>,
+                       hasColorPanel: Boolean,
+                       private val isDynamic: Boolean,
+                       shouldCopyLabels: Boolean) {
 
     private val colorPanel: JPanel? = if (hasColorPanel) JPanel() else null
     private val frame = JFrame().apply {
@@ -31,7 +32,7 @@ internal class DetailDisplay(private val panels: List<ActionPanel>,
         try {
             Logger.getLogger(GlobalScreen::class.java.getPackage().name).apply { level = Level.WARNING; useParentHandlers = false }
             GlobalScreen.registerNativeHook()
-            GlobalScreen.addNativeKeyListener(CopyKeyPressListener(panels, shouldCopyLabels))
+            GlobalScreen.addNativeKeyListener(CopyListener(panels, shouldCopyLabels))
         } catch (e: NativeHookException) {
             println("Failed to register Native Hook. Copying will be disabled.")
         }
@@ -92,4 +93,39 @@ internal class DetailDisplay(private val panels: List<ActionPanel>,
             frame.pack()
         }
     }
+}
+
+class ActionPanel(val labelText: String, private val action: (Pixel) -> String) : JPanel(FlowLayout(FlowLayout.LEFT)) {
+    private val dynamicLabel = JLabel()
+
+    var text: String
+        get() = dynamicLabel.text
+        set(value) {
+            dynamicLabel.text = value
+        }
+
+    init {
+        this.add(JLabel(labelText).apply { font = Font("Monospaced", Font.BOLD, 12) })
+        this.add(dynamicLabel)
+    }
+
+    fun performAction(pixel: Pixel) {
+        text = action.invoke(pixel)
+    }
+}
+
+class OptionPanel(title: String) : JPanel(GridLayout(0, 1)) {
+    val selections: BooleanArray
+        get() = components.map { (it as JCheckBox).isSelected }.toBooleanArray()
+
+    init {
+        border = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), title, TitledBorder.LEFT, TitledBorder.TOP)
+    }
+
+    fun firstSelection() = selections.first()
+
+    fun addCheckBox(boxText: String, tooltip: String) = add(JCheckBox(boxText).apply {
+        isSelected = true
+        toolTipText = tooltip
+    })
 }

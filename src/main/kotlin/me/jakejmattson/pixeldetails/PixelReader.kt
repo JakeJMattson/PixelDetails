@@ -32,7 +32,7 @@ fun main() {
     val isDynamic = placement.firstSelection()
     val shouldCopyLabels = copy.firstSelection()
 
-    val display = DetailDisplay(panels, hasColorPanel, isDynamic, shouldCopyLabels)
+    val display = Display(panels, hasColorPanel, isDynamic, shouldCopyLabels)
     val robot = Robot()
 
     while (display.isOpen) {

@@ -5,7 +5,7 @@ import org.jnativehook.keyboard.NativeKeyEvent.*
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 
-internal class CopyKeyPressListener(private val panels: List<ActionPanel>, private val shouldCopyLabels: Boolean) : NativeKeyListener {
+internal class CopyListener(private val panels: List<ActionPanel>, private val shouldCopyLabels: Boolean) : NativeKeyListener {
     private var keyList: MutableList<Int> = mutableListOf()
 
     override fun nativeKeyPressed(event: NativeKeyEvent) {
