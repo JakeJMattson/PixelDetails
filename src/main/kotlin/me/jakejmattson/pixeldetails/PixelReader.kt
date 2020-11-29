@@ -37,7 +37,7 @@ fun main() {
 
     while (display.isOpen) {
         val mousePosition = MouseInfo.getPointerInfo().location
-        val pixelColor = robot.getPixelColor(mousePosition)
+        val pixelColor = robot.getPixelColor(mousePosition.x, mousePosition.y)
 
         display.updateComponents(mousePosition, pixelColor)
     }
@@ -52,15 +52,15 @@ private fun displayOptions(vararg options: OptionPanel) {
 }
 
 private fun createPanels(selections: BooleanArray) = selections.zip(listOf(
-    CoordinatePanel("X,Y = ") { mouse: Point -> "(%s, %s)".formatArray(mouse.toIntArray()) },
-    ColorPanel("RGB = ") { pixelColor: Color -> "(%s, %s, %s)".formatArray(pixelColor.toIntArray()) },
-    ColorPanel("HSV = ") { pixelColor: Color -> "(%s%%, %s%%, %s%%)".formatArray(pixelColor.toHSV()) },
-    ColorPanel("Hex = ") { pixelColor: Color -> "#%02X%02X%02X".formatArray(pixelColor.toIntArray()) }
+    CoordinatePanel("X,Y = ") { mouse: Point -> "(%s, %s)".format(mouse.x, mouse.y) },
+    ColorPanel("RGB = ") { pixelColor: Color -> "(%s, %s, %s)".format(pixelColor) },
+    ColorPanel("HSV = ") { pixelColor: Color -> "(%s%%, %s%%, %s%%)".format(*pixelColor.toHSV()) },
+    ColorPanel("Hex = ") { pixelColor: Color -> "#%02X%02X%02X".format(pixelColor) }
 )).filter { it.first }.map { it.second }
 
-fun String.formatArray(data: Array<Int>) = this.format(*data)
-fun Robot.getPixelColor(point: Point) = getPixelColor(point.x, point.y)
-fun Point.toIntArray() = arrayOf(x, y)
-fun Color.toIntArray() = arrayOf(red, green, blue)
-fun Color.toHSV() = FloatArray(3).apply { Color.RGBtoHSB(red, green, blue, this) }
-    .map { (it * 100).roundToInt() }.toTypedArray()
+fun String.format(color: Color) = with (color) { format(red, green, blue) }
+
+fun Color.toHSV() = FloatArray(3)
+    .apply { Color.RGBtoHSB(red, green, blue, this) }
+    .map { (it * 100).roundToInt() }
+    .toTypedArray()
