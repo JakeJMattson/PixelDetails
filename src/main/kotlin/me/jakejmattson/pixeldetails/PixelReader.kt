@@ -7,22 +7,22 @@ import kotlin.system.exitProcess
 
 fun main() {
     val info = OptionPanel("Info to be displayed (Text)").apply {
-        addCheckBox("Coordinates", "Location (X,Y) of the mouse on the screen")
-        addCheckBox("RGB", "Pixel color as 'Red, Green, Blue' values")
-        addCheckBox("HSV", "Pixel color as 'Hue, Saturation, Value' values")
-        addCheckBox("Hex", "Pixel color as Hexadecimal value")
+        addCheckBox("Coordinates", "Mouse Location (X,Y)")
+        addCheckBox("RGB", "Red, Green, Blue")
+        addCheckBox("HSV", "Hue, Saturation, Value")
+        addCheckBox("Hex", "Hexadecimal")
     }
 
     val color = OptionPanel("Color panel").apply {
         addCheckBox("Color panel", "Pixel color on a larger display")
     }
 
-    val placement = OptionPanel("Placement behavior").apply {
-        addCheckBox("Dynamic placement", "Allow the frame to \"follow\" the mouse pointer")
+    val placement = OptionPanel("Placement").apply {
+        addCheckBox("Dynamic", "Window will follow the mouse pointer")
     }
 
     val copy = OptionPanel("Copy format").apply {
-        addCheckBox("Include labels", "Static labels will be copied along with dynamic data")
+        addCheckBox("Include labels", "Copy data labels with data")
     }
 
     displayOptions(info, color, placement, copy)
