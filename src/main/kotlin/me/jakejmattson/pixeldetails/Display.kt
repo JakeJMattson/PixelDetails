@@ -114,18 +114,29 @@ class ActionPanel(val labelText: String, private val action: (Pixel) -> String) 
     }
 }
 
-class OptionPanel(title: String) : JPanel(GridLayout(0, 1)) {
-    val selections: BooleanArray
-        get() = components.map { (it as JCheckBox).isSelected }.toBooleanArray()
+class OptionPanel(title: String, builder: OptionPanel.() -> Unit) : JPanel(GridLayout(0, 1)) {
+    private val options = mutableListOf<JCheckBox>()
+
+    val selections
+        get() = options.map { it.isSelected }
 
     init {
         border = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), title, TitledBorder.LEFT, TitledBorder.TOP)
+        builder.invoke(this)
+
+        options.forEach {
+            this.add(it)
+        }
     }
 
-    fun firstSelection() = selections.first()
+    operator fun get(index: Int) = options[index].isSelected
 
-    fun addCheckBox(boxText: String, tooltip: String) = add(JCheckBox(boxText).apply {
-        isSelected = true
-        toolTipText = tooltip
-    })
+    fun option(boxText: String, tooltip: String) {
+        options.add(
+            JCheckBox(boxText).apply {
+                isSelected = true
+                toolTipText = tooltip
+            }
+        )
+    }
 }

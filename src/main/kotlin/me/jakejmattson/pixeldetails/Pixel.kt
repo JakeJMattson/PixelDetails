@@ -16,7 +16,7 @@ data class Pixel(val location: Point, val color: Color) {
     val hex
         get() = "#%02X%02X%02X".format(color)
 
-    private fun String.format(color: Color) = with (color) { format(red, green, blue) }
+    private fun String.format(color: Color) = with(color) { format(red, green, blue) }
 
     private fun Color.toHSV() = FloatArray(3)
         .apply { Color.RGBtoHSB(red, green, blue, this) }
